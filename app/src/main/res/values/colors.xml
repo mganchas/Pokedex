@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- global -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red_light">#FF0000</color>
+    <color name="red_dark">#CC0000</color>
+    <color name="gold">#FFDE00</color>
+    <color name="blue">#3B4CCA</color>
+
+    <!-- stats -->
+    <color name="hp">#1abc9c</color>
+    <color name="attack">#e67e22</color>
+    <color name="special_attack">#e74c3c</color>
+    <color name="defense">#3498db</color>
+    <color name="special_defense">#9b59b6</color>
+    <color name="speed">#34495e</color>
+</resources>

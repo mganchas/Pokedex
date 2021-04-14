@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Stats -->
+    <string name="stat_hp">HP</string>
+    <string name="stat_attack">Ataque</string>
+    <string name="stat_special_attack">Ataque Especial</string>
+    <string name="stat_defense">Defesa</string>
+    <string name="stat_special_defense">Defesa Especial</string>
+    <string name="stat_speed">Velocidade</string>
+
+    <!-- toasts -->
+    <string name="toast_generic_error">Desculpe, algo de errado aconteceu. Por favor, tente novamente</string>
+</resources>

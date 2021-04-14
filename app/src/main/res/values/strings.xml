@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name" translatable="false">Pokedex</string>
+
+    <!-- Stats -->
+    <string name="stat_hp">HP</string>
+    <string name="stat_attack">Attack</string>
+    <string name="stat_special_attack">Special Attack</string>
+    <string name="stat_defense">Defense</string>
+    <string name="stat_special_defense">Special Defense</string>
+    <string name="stat_speed">Speed</string>
+
+    <!-- toasts -->
+    <string name="toast_generic_error">Something went wrong. Please, try again</string>
+</resources>
