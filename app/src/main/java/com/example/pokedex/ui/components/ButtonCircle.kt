@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.annotation.ColorRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.example.pokedex.R
@@ -98,11 +97,11 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
     {
         return when(buttonSizeLevel)
         {
-            SIZE_LEVEL_SMALL -> context.resources.getDimension(R.dimen.button_circle_inner_small_size)
-            SIZE_LEVEL_SMALLDIUM -> context.resources.getDimension(R.dimen.button_circle_inner_smalldium_size)
-            SIZE_LEVEL_MEDIUM -> context.resources.getDimension(R.dimen.button_circle_inner_medium_size)
-            SIZE_LEVEL_BIG -> context.resources.getDimension(R.dimen.button_circle_inner_big_size)
-            else -> context.resources.getDimension(R.dimen.button_circle_inner_medium_size)
+            SIZE_LEVEL_SMALL -> context.resources.getDimension(R.dimen.inner_small_size)
+            SIZE_LEVEL_SMALLDIUM -> context.resources.getDimension(R.dimen.inner_smalldium_size)
+            SIZE_LEVEL_MEDIUM -> context.resources.getDimension(R.dimen.inner_medium_size)
+            SIZE_LEVEL_BIG -> context.resources.getDimension(R.dimen.inner_big_size)
+            else -> context.resources.getDimension(R.dimen.inner_medium_size)
         } / resources.displayMetrics.density
     }
 
@@ -110,11 +109,11 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
     {
         return when(buttonSizeLevel)
         {
-            SIZE_LEVEL_SMALL -> context.resources.getDimension(R.dimen.button_circle_outer_small_size)
-            SIZE_LEVEL_SMALLDIUM -> context.resources.getDimension(R.dimen.button_circle_outer_smalldium_size)
-            SIZE_LEVEL_MEDIUM -> context.resources.getDimension(R.dimen.button_circle_outer_medium_size)
-            SIZE_LEVEL_BIG -> context.resources.getDimension(R.dimen.button_circle_outer_big_size)
-            else -> context.resources.getDimension(R.dimen.button_circle_outer_medium_size)
+            SIZE_LEVEL_SMALL -> context.resources.getDimension(R.dimen.outer_small_size)
+            SIZE_LEVEL_SMALLDIUM -> context.resources.getDimension(R.dimen.outer_smalldium_size)
+            SIZE_LEVEL_MEDIUM -> context.resources.getDimension(R.dimen.outer_medium_size)
+            SIZE_LEVEL_BIG -> context.resources.getDimension(R.dimen.outer_big_size)
+            else -> context.resources.getDimension(R.dimen.outer_medium_size)
         } / resources.displayMetrics.density
     }
 }

@@ -1,13 +1,20 @@
 package com.example.pokedex.data.models.stats
 
+import android.util.Log
 import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
 
 class PokemonStatDetailsAttack : IPokemonStatDetails {
+    companion object {
+        private val TAG = PokemonStatDetailsAttack::class.java.simpleName
+    }
+
     override fun getName() : Int {
+        Log.d(TAG, "getName()")
         TODO("Not yet implemented")
     }
 
     override fun getColor(): Int {
+        Log.d(TAG, "getColor()")
         TODO("Not yet implemented")
     }
 }

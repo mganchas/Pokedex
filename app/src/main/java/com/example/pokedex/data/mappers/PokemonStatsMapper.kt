@@ -1,5 +1,6 @@
 package com.example.pokedex.data.mappers
 
+import android.util.Log
 import com.example.pokedex.data.types.PokemonStats
 
 object PokemonStatsMapper
@@ -15,8 +16,10 @@ object PokemonStatsMapper
         )
     }
 
+    private val TAG = PokemonStatsMapper::class.java.simpleName
+
     fun getStatTypeByRawValue(rawValue : String) : PokemonStats {
-        return rawStatsMap[rawValue] ?:
-            throw IndexOutOfBoundsException("invalid stat: $rawValue")
+        Log.d(TAG, "getStatTypeByRawValue() rawValue: $rawValue")
+        return rawStatsMap[rawValue] ?: throw IndexOutOfBoundsException("invalid stat: $rawValue")
     }
 }

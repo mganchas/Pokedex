@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- labels -->
+    <string name="label_search_title">Bem-vindo(a) à Pokedex!</string>
+    <string name="label_search_subtitle">Podes obter todos os Pokemons ou procurar um em específico</string>
+
     <!-- Stats -->
     <string name="stat_hp">HP</string>
     <string name="stat_attack">Ataque</string>

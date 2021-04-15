@@ -1,5 +1,6 @@
 package com.example.pokedex.data.managers
 
+import android.util.Log
 import com.example.pokedex.data.models.stats.PokemonStatDetailsAttack
 import com.example.pokedex.data.models.stats.PokemonStatDetailsHP
 import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
@@ -17,8 +18,10 @@ object PokemonStatsManager {
         )
     }
 
+    private val TAG = PokemonStatsManager::class.java.simpleName
+
     fun getStatDetailsByType(statType : PokemonStats) : IPokemonStatDetails {
-        return statsMap[statType] ?:
-            throw IndexOutOfBoundsException("invalid stat: ${statType.name}")
+        Log.d(TAG, "getStatDetailsByType() statType: $statType")
+        return statsMap[statType] ?: throw IndexOutOfBoundsException("invalid stat: ${statType.name}")
     }
 }

@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name" translatable="false">Pokedex</string>
 
+    <!-- labels -->
+    <string name="label_search_title">Welcome to Pokedex!</string>
+    <string name="label_search_subtitle">You can retrieve all Pokemons are find a specific one</string>
+
     <!-- Stats -->
     <string name="stat_hp">HP</string>
     <string name="stat_attack">Attack</string>
@@ -15,7 +19,4 @@
 
     <!-- hints -->
     <string name="hint_search">Search criteria</string>
-
-    <!-- miscellaneous -->
-    <string name="button_circle_description" translatable="false">ButtonCircle</string>
 </resources>
