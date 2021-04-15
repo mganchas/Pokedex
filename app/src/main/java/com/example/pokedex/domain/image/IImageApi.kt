@@ -1,4 +1,5 @@
 package com.example.pokedex.domain.image
 
-class ImageApi {
+interface IImageApi {
+    fun doX()
 }

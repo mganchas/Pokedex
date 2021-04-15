@@ -8,6 +8,10 @@
     <string name="stat_special_defense">Defensa Especial</string>
     <string name="stat_speed">Velocidad</string>
 
-    <!-- toasts -->
-    <string name="toast_generic_error">Perdone, algo malo pasó. Por favor, intente otra vez</string>
+    <!-- hints -->
+    <string name="hint_search">Criterio de búsqueda</string>
+
+    <!-- alerts -->
+    <string name="alert_generic_error">Perdone, algo malo pasó. Por favor, intente otra vez</string>
+    <string name="alert_input_invalid">Su criterio de búsqueda no es válido</string>
 </resources>

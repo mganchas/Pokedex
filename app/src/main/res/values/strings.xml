@@ -9,6 +9,13 @@
     <string name="stat_special_defense">Special Defense</string>
     <string name="stat_speed">Speed</string>
 
-    <!-- toasts -->
-    <string name="toast_generic_error">Something went wrong. Please, try again</string>
+    <!-- alert -->
+    <string name="alert_generic_error">Something went wrong. Please, try again</string>
+    <string name="alert_input_invalid">Su criterio de búsqueda no es válido</string>
+
+    <!-- hints -->
+    <string name="hint_search">Search criteria</string>
+
+    <!-- miscellaneous -->
+    <string name="button_circle_description" translatable="false">ButtonCircle</string>
 </resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ButtonCircle">
+        <attr name="image" format="reference" />
+        <attr name="imageTint" format="color" />
+
+        <attr name="backColor" format="color">
+            <enum name="primary" value="0"/>
+            <enum name="secondary" value="1"/>
+        </attr>
+
+        <attr name="size" format="enum">
+            <enum name="small" value="0"/>
+            <enum name="smalldium" value="1"/>
+            <enum name="medium" value="2"/>
+            <enum name="big" value="3"/>
+        </attr>
+    </declare-styleable>
+</resources>
