@@ -54,7 +54,7 @@
             app:layout_constraintTop_toBottomOf="@id/title" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/editFilterLayout"
+            android:id="@+id/editSearchLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -95,13 +95,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
                 app:backColor="secondary"
                 app:image="@drawable/ic_search"
                 app:imageTint="@color/red_light"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:size="small" />
+                app:size="medium" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -113,7 +112,7 @@
             app:layout_constraintBottom_toTopOf="@+id/buttonsLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editFilterLayout"
+            app:layout_constraintTop_toBottomOf="@+id/editSearchLayout"
             tools:listitem="@layout/recyclerview_pokemon_item" />
 
         <LinearLayout

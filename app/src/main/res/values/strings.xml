@@ -15,7 +15,8 @@
 
     <!-- alert -->
     <string name="alert_generic_error">Something went wrong. Please, try again</string>
-    <string name="alert_input_invalid">Su criterio de búsqueda no es válido</string>
+    <string name="alert_input_invalid">Your search criteria is not valid</string>
+    <string name="alert_generic_network">There was a connection issue. Please, try again</string>
 
     <!-- hints -->
     <string name="hint_search">Search criteria</string>

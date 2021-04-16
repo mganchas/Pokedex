@@ -6,17 +6,16 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.pokedex.R
-import com.example.pokedex.data.events.OnLoadingEvent
-import com.example.pokedex.data.events.OnSearchErrorEvent
+import com.example.pokedex.data.events.BaseEvent
+import com.example.pokedex.data.mappers.EventTypesMapper
 import com.example.pokedex.data.models.Pokemon
+import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.databinding.ActivityMainBinding
 import com.example.pokedex.domain.alerts.IAlertApi
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.loading.ILoadingApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,13 +30,23 @@ class MainActivity : AppCompatActivity()
     @Inject
     lateinit var loadingApi : ILoadingApi
 
+    companion object {
+        private val TAG = MainActivity::class.java.simpleName
+    }
     private lateinit var binding: ActivityMainBinding
+
     private val vm by viewModels<MainViewModel>()
 
     private lateinit var listAdapter: PokemonListAdapter
 
-    companion object {
-        private val TAG = MainActivity::class.java.simpleName
+    private val eventsMapper : Map<EventTypes, (Map<String, Any>?) -> Unit> by lazy {
+        mapOf(
+            EventTypes.ShowLoading to ::onShowLoading,
+            EventTypes.HideLoading to ::onHideLoading,
+            EventTypes.SearchErrorInvalidInput to ::onSearchError,
+            EventTypes.SearchErrorGeneric to ::onSearchError,
+            EventTypes.SearchErrorNetwork to ::onSearchError
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +57,8 @@ class MainActivity : AppCompatActivity()
         setContentView(view)
 
         setSearchButton()
+        setPreviousButton()
+        setNextButton()
         setListAdapter()
         setRecyclerView()
     }
@@ -66,19 +77,40 @@ class MainActivity : AppCompatActivity()
         unregisterObservers()
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSearchError(onSearchErrorEvent: OnSearchErrorEvent) {
-        Log.d(TAG, "onSearchError() onSearchError.message: ${onSearchErrorEvent.message}")
-        alertApi.showMessage(this, onSearchErrorEvent.message)
+    @Subscribe
+    fun onEvent(event : BaseEvent) {
+        Log.d(TAG, "onEvent() eventType: ${event.eventType} | payload: ${event.payload}")
+        try {
+            val eventMapperFunction = eventsMapper[event.eventType] ?: throw NullPointerException("invalid event type")
+            eventMapperFunction(event.payload)
+        } catch (e : Exception) {
+
+        }
     }
 
-    @Subscribe
-    fun onLoading(onLoadingEvent: OnLoadingEvent) {
-        Log.d(TAG, "onLoading() onLoadingEvent.visible: ${onLoadingEvent.visible}")
-        when(onLoadingEvent.visible) {
-            true -> loadingApi.show()
-            false -> loadingApi.hide()
+    /*
+        Note: It is true that this method (onSearchError) centralizes every search error type and
+        could have been spread into 'N' (error specific) different methods, to handle each error type.
+        But, for simplicity of this exercise, I've put all handlers into one method.
+    */
+    private fun onSearchError(payload: Map<String, Any>?) {
+        Log.d(TAG, "onSearchError() payload: $payload")
+        if (payload == null) {
+            throw NullPointerException("payload cannot be null for search errors")
         }
+        val message = payload[EventTypesMapper.MESSAGE]?.toString() ?: throw IndexOutOfBoundsException("key not in map")
+        Log.d(TAG, "onSearchError() message: $message")
+        alertApi.showMessage(this, message)
+    }
+
+    private fun onShowLoading(payload: Map<String, Any>?) {
+        Log.d(TAG, "onShowLoading()")
+        loadingApi.show()
+    }
+
+    private fun onHideLoading(payload: Map<String, Any>?) {
+        Log.d(TAG, "onHideLoading()")
+        loadingApi.hide()
     }
 
     private fun setSearchButton() {
@@ -87,6 +119,22 @@ class MainActivity : AppCompatActivity()
             val inputValue = binding.editSearch.text.toString()
             Log.d(TAG, "setSearchButton().onClick() inputValue: $inputValue")
             vm.onSearch(inputValue)
+        }
+    }
+
+    private fun setPreviousButton() {
+        Log.d(TAG, "setPreviousButton()")
+        binding.previousPageButton.setOnClickListener {
+            Log.d(TAG, "setPreviousButton().onClick()")
+            vm.onPrevious()
+        }
+    }
+
+    private fun setNextButton() {
+        Log.d(TAG, "setNextButton()")
+        binding.nextPageButton.setOnClickListener {
+            Log.d(TAG, "setNextButton().onClick()")
+            vm.onNext()
         }
     }
 
@@ -145,6 +193,10 @@ class MainActivity : AppCompatActivity()
         vm.isPreviousNavigationButtonEnabled.observe(this, {
             Log.d(TAG, "registerPreviousNavigationButtonEnabledObserver().onObserve() value: $it")
             binding.previousPageButton.isEnabled = it
+            when(it) {
+                true -> binding.previousPageButton.setEnabled()
+                false -> binding.previousPageButton.setDisabled()
+            }
         })
     }
 
@@ -153,6 +205,10 @@ class MainActivity : AppCompatActivity()
         vm.isNextNavigationButtonEnabled.observe(this, {
             Log.d(TAG, "registerNextNavigationButtonEnabledObserver().onObserve() value: $it")
             binding.nextPageButton.isEnabled = it
+            when(it) {
+                true -> binding.nextPageButton.setEnabled()
+                false -> binding.nextPageButton.setDisabled()
+            }
         })
     }
 
@@ -167,7 +223,6 @@ class MainActivity : AppCompatActivity()
         unregisterNavigationButtonsVisibilityObserver()
         unregisterPreviousNavigationButtonEnabledObserver()
         unregisterNextNavigationButtonEnabledObserver()
-
     }
 
     private fun unregisterListObserver() {

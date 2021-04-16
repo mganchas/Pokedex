@@ -1,8 +1,7 @@
 package com.example.pokedex.data.managers
 
 import android.util.Log
-import com.example.pokedex.data.models.stats.PokemonStatDetailsAttack
-import com.example.pokedex.data.models.stats.PokemonStatDetailsHP
+import com.example.pokedex.data.models.stats.*
 import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
 import com.example.pokedex.data.types.PokemonStats
 
@@ -11,10 +10,10 @@ object PokemonStatsManager {
         mapOf(
             PokemonStats.HP to PokemonStatDetailsHP(),
             PokemonStats.Attack to PokemonStatDetailsAttack(),
-            PokemonStats.SpecialAttack to PokemonStatDetailsHP(),
-            PokemonStats.Defense to PokemonStatDetailsHP(),
-            PokemonStats.SpecialDefense to PokemonStatDetailsHP(),
-            PokemonStats.Speed to PokemonStatDetailsHP()
+            PokemonStats.SpecialAttack to PokemonStatDetailsSpecialAttack(),
+            PokemonStats.Defense to PokemonStatDetailsDefense(),
+            PokemonStats.SpecialDefense to PokemonStatDetailsSpecialDefense(),
+            PokemonStats.Speed to PokemonStatDetailsSpeed()
         )
     }
 

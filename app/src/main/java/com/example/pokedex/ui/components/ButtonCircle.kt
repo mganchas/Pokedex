@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.example.pokedex.R
 import com.example.pokedex.data.extensions.toDP
+import com.example.pokedex.databinding.ButtonCircleBinding
 
 class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
     companion object
@@ -23,13 +24,25 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
 
         const val BACKCOLOR_LEVEL_PRIMARY = 0
         const val BACKCOLOR_LEVEL_SECONDARY = 1
+        const val BACKCOLOR_LEVEL_DISABLED = 2
     }
 
     var image: Drawable?
+        private set
+
     @ColorRes var imageTint: Int = 0
+        private set
+
 
     var backColorLevel : Int = BACKCOLOR_LEVEL_PRIMARY
+        private set
+
+    private var initialBackColorLevel : Int = BACKCOLOR_LEVEL_PRIMARY
+
     var buttonSizeLevel : Int = SIZE_LEVEL_MEDIUM
+        private set
+
+    private lateinit var binding : ButtonCircleBinding
 
     init {
         context.theme.obtainStyledAttributes(
@@ -50,7 +63,7 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
         }
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        inflater.inflate(R.layout.button_circle, this, true)
+        binding = ButtonCircleBinding.inflate(inflater, this, true)
 
         initParentView()
         initIcon()
@@ -59,18 +72,20 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
 
     private fun initParentView()
     {
+        initialBackColorLevel = backColorLevel
+
         val parentLayoutAsDP = getParentLayoutSizeResource().toDP(context)
         val marginBottom = 10f.toDP(context)
         val marginDefault = 5f.toDP(context)
 
-        findViewById<RelativeLayout>(R.id.button_circle_parent_layout).also {
+        binding.buttonCircleParentLayout.apply {
             layoutParams = LayoutParams(parentLayoutAsDP, parentLayoutAsDP).apply {
                 bottomMargin = marginBottom
                 topMargin = marginDefault
                 leftMargin = marginDefault
                 rightMargin = marginDefault
             }
-            it.background.level = backColorLevel
+            background.level = backColorLevel
             elevation = context.resources.getDimension(R.dimen.default_elevation)
         }
     }
@@ -81,11 +96,21 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
         val img = image
 
         val iconSizeAsDP = getIconSize().toDP(context)
-        findViewById<ImageView>(R.id.button_circle_icon).apply {
-            layoutParams = LayoutParams(iconSizeAsDP, iconSizeAsDP)
-            setImageDrawable(img)
+        binding.buttonCircleIcon.apply {
+            this.layoutParams = LayoutParams(iconSizeAsDP, iconSizeAsDP)
+            this.setImageDrawable(img)
             ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(ContextCompat.getColor(context, imageTint)))
         }
+    }
+
+    fun setEnabled() {
+        binding.buttonCircleParentLayout.background.level = initialBackColorLevel
+        updateView()
+    }
+
+    fun setDisabled() {
+        binding.buttonCircleParentLayout.background.level = BACKCOLOR_LEVEL_DISABLED
+        updateView()
     }
 
     private fun updateView() {

@@ -7,6 +7,7 @@
         <attr name="backColor" format="color">
             <enum name="primary" value="0"/>
             <enum name="secondary" value="1"/>
+            <enum name="disabled" value="2"/>
         </attr>
 
         <attr name="size" format="enum">
