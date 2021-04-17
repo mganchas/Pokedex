@@ -1,6 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_light"
+    android:paddingHorizontal="20dp">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/avatarContainer"
+        android:layout_width="@dimen/avatar"
+        android:layout_height="@dimen/avatar"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/circle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/pokemon_image_description"
+            android:padding="30dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/ic_pokeball" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/avatarContainer"
+        tools:text="Pikachu" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/name">
+
+            <com.example.pokedex.ui.components.PokemonStatsItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:statBackColor="hp"
+                app:statImage="@drawable/ic_heart"
+                app:statName="@string/stat_hp"
+                app:statValue="80" />
+
+            <com.example.pokedex.ui.components.PokemonStatsItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:statBackColor="attack"
+                app:statImage="@drawable/ic_sword"
+                app:statName="@string/stat_attack"
+                app:statValue="80" />
+
+            <com.example.pokedex.ui.components.PokemonStatsItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:statBackColor="specialAttack"
+                app:statImage="@drawable/ic_magic"
+                app:statName="@string/stat_special_attack"
+                app:statValue="80" />
+
+            <com.example.pokedex.ui.components.PokemonStatsItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:statBackColor="defense"
+                app:statImage="@drawable/ic_shield"
+                app:statName="@string/stat_defense"
+                app:statValue="80" />
+
+            <com.example.pokedex.ui.components.PokemonStatsItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:statBackColor="specialDefense"
+                app:statImage="@drawable/ic_wall"
+                app:statName="@string/stat_special_defense"
+                app:statValue="80" />
+
+            <com.example.pokedex.ui.components.PokemonStatsItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:statBackColor="speed"
+                app:statImage="@drawable/ic_spark"
+                app:statName="@string/stat_speed"
+                app:statValue="80" />
+
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

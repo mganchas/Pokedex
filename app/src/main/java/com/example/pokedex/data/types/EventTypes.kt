@@ -4,6 +4,7 @@ enum class EventTypes {
     ShowLoading,
     HideLoading,
     SearchErrorInvalidInput,
+    SearchNotFound,
     SearchErrorGeneric,
     SearchErrorNetwork
 }

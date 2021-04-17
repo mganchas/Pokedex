@@ -19,7 +19,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import java.net.SocketTimeoutException
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,44 +52,42 @@ class MainViewModel @Inject constructor(
     private var searchValue: String? = null
     private var pageLimit = context.resources.getInteger(R.integer.api_default_limit)
 
-    private val errorMessageInputInvalid : String by lazy {
+    private val alertMessageInputInvalid : String by lazy {
         context.getString(R.string.alert_input_invalid)
     }
-    private val errorMessageGeneric : String by lazy {
+    private val alertMessageNotFound : String by lazy {
+        context.getString(R.string.alert_not_found)
+    }
+    private val alertMessageGeneric : String by lazy {
         context.getString(R.string.alert_generic_error)
     }
-    private val errorMessageNetwork : String by lazy {
+    private val alertMessageNetwork : String by lazy {
         context.getString(R.string.alert_generic_network)
     }
 
-    fun onPrevious() = viewModelScope.launch {
+    fun onPrevious() {
         Log.d(TAG, "onPrevious()")
         val searchUrl = pokemonSearch.value?.previous ?: ""
         Log.d(TAG, "onPrevious() searchUrl: $searchUrl")
-
         if (searchUrl.isEmpty()) {
             throw NullPointerException("no previous url to navigate")
         }
-
-        // TODO: igual ao search
+        doCollectionSearch(searchUrl)
     }
 
-    fun onNext() = viewModelScope.launch {
+    fun onNext() {
         Log.d(TAG, "onNext()")
         val searchUrl = pokemonSearch.value?.next ?: ""
         Log.d(TAG, "onNext() searchUrl: $searchUrl")
-
         if (searchUrl.isEmpty()) {
             throw NullPointerException("no next url to navigate")
         }
-
-        // TODO: igual ao search
+        doCollectionSearch(searchUrl)
     }
 
     fun onPokemonDetail() {
         Log.d(TAG, "onPokemonDetail()")
-        // TODO: ir à lista e passar para o controller o value de 'Pokemon' ...
-
+        // TODO: ir à lista e passar para o controller o value de 'Pokemon' atraves de publish, para ele poder navegar
     }
 
     fun onSearch() {
@@ -109,47 +109,71 @@ class MainViewModel @Inject constructor(
 
     fun setSearchValue(newValue : String) {
         Log.d(TAG, "setSearchValue() newValue: $newValue")
-        searchValue = newValue
+        searchValue = newValue.toLowerCase(Locale.ROOT)
     }
 
-    private fun onValueSearch(value: String) {
+    private fun onValueSearch(value: String) = viewModelScope.launch {
         Log.d(TAG, "onValueSearch() value: $value")
+
+        sendEventShowLoading()
+        try {
+            clearResults()
+            val pokemon = getPokemonByValue(value)
+            Log.d(TAG, "onValueSearch() pokemon: $pokemon")
+            val searchResults = PokemonSearch(
+                count = 1,
+                next = null,
+                previous = null,
+                results = listOf(pokemon)
+            )
+            setPokemonsCount(searchResults.count)
+            setPokemonSearch(searchResults)
+        } catch (e: Exception) {
+            handleExceptions(e)
+        }
+        finally {
+            sendEventHideLoading()
+        }
+
         // TODO: validar localmente (persistencia do dispositivo) se não tem já estes dados
     }
 
-    private suspend fun getPokemonByValue(value: String) {
+    private suspend fun getPokemonByValue(value: String) : Pokemon {
         Log.d(TAG, "getPokemonByValue() value: $value")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonDetailsByValue(value)
+            webApi.getPokemonService().getPokemonByValue(value)
         }
+    }
+
+    private fun clearResults() = viewModelScope.launch {
+        Log.d(TAG, "clearPokemonList()")
+        setPokemonSearch(null)
+        setPokemonsCount(0)
+        setIsPreviousNavigationButtonsEnabled(false)
+        setIsNextNavigationButtonsEnabled(false)
     }
 
     private fun onEmptySearch() {
         Log.d(TAG, "onEmptySearch()")
+        doCollectionSearch(null)
+    }
+
+    private fun doCollectionSearch(searchUrl: String?) = viewModelScope.launch {
+        Log.d(TAG, "doCollectionSearch()")
         sendEventShowLoading()
-        viewModelScope.launch {
-            try {
-                clearPokemonList()
-                val searchResults = getPokemons()
-                Log.d(TAG, "onEmptySearch() searchResults: $searchResults")
-
-                searchResults.results.forEach {
-                    it.id = urlParserApi.getLastPath(it.url)
-                    val pokemonDetails = getPokemonDetailsByUrl(it.url)
-                    Log.d(TAG, "pokemonDetails: $pokemonDetails")
-                    it.sprites = pokemonDetails.sprites
-                }
-
-                setIsPreviousNavigationButtonsEnabled(searchResults.previous != null)
-                setIsNextNavigationButtonsEnabled(searchResults.next != null)
-                setPokemonsCount(searchResults.count)
-
-                pokemonSearch.value = searchResults
-                sendEventHideLoading()
-            } catch (e: Exception) {
-                sendEventHideLoading()
-                handleExceptions(e)
-            }
+        try {
+            val searchResults = if (searchUrl != null) getPokemonsByUrl(searchUrl) else getPokemons()
+            Log.d(TAG, "doCollectionSearch() searchResults: $searchResults")
+            getPokemonDetailsForResults(searchResults)
+            setIsPreviousNavigationButtonsEnabled(searchResults.previous != null)
+            setIsNextNavigationButtonsEnabled(searchResults.next != null)
+            setPokemonsCount(searchResults.count)
+            setPokemonSearch(searchResults)
+        } catch (e: Exception) {
+            handleExceptions(e)
+        }
+        finally {
+            sendEventHideLoading()
         }
     }
 
@@ -157,6 +181,16 @@ class MainViewModel @Inject constructor(
         Log.d(TAG, "getPokemons()")
         return withContext(Dispatchers.IO) {
             webApi.getPokemonService().getPokemonsWithLimit(pageLimit)
+        }
+    }
+
+    private suspend fun getPokemonDetailsForResults(searchResults: PokemonSearch) {
+        Log.d(TAG, "getPokemonDetailsForResults()")
+        searchResults.results.forEach {
+            val pokemonDetails = getPokemonDetailsByUrl(it.url)
+            Log.d(TAG, "getPokemonDetailsForResults() pokemonDetails: $pokemonDetails")
+            it.id = urlParserApi.getLastPath(it.url)
+            it.sprites = pokemonDetails.sprites
         }
     }
 
@@ -170,13 +204,8 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemonDetailsByUrl(url: String) : Pokemon {
         Log.d(TAG, "getPokemonByUrl()")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonDetailsByUrl(url)
+            webApi.getPokemonService().getPokemonByUrl(url)
         }
-    }
-
-    private fun clearPokemonList() = viewModelScope.launch {
-        Log.d(TAG, "clearPokemonList()")
-        pokemonSearch.value = null
     }
 
     private fun handleExceptions(e: Exception) {
@@ -184,6 +213,14 @@ class MainViewModel @Inject constructor(
         when (e) {
             is SocketTimeoutException -> {
                 sendEventErrorNetwork()
+            }
+            is HttpException -> {
+                if (e.code() == 404) {
+                    sendEventNotFound()
+                }
+                else {
+                    sendEventErrorNetwork()
+                }
             }
             else -> {
                 sendEventErrorGeneric()
@@ -201,9 +238,14 @@ class MainViewModel @Inject constructor(
         isNextNavigationButtonEnabled.value = value
     }
 
-    private fun setPokemonsCount(value: Int) = viewModelScope.launch {
+    private fun setPokemonsCount(value: Int)  {
         Log.d(TAG, "setPokemonsCount() value: $value")
         pokemonsCount.value = value
+    }
+
+    private fun setPokemonSearch(value: PokemonSearch?)  {
+        Log.d(TAG, "setPokemonSearch() value: $value")
+        pokemonSearch.value = value
     }
 
     /*
@@ -215,7 +257,16 @@ class MainViewModel @Inject constructor(
         Log.d(TAG, "sendEventErrorInvalidInput()")
         val event = BaseEvent(
             EventTypes.SearchErrorInvalidInput,
-            mapOf(EventTypesMapper.MESSAGE to errorMessageInputInvalid)
+            mapOf(EventTypesMapper.MESSAGE to alertMessageInputInvalid)
+        )
+        eventApi.publish(event)
+    }
+
+    private fun sendEventNotFound() {
+        Log.d(TAG, "sendEventNotFound()")
+        val event = BaseEvent(
+            EventTypes.SearchNotFound,
+            mapOf(EventTypesMapper.MESSAGE to alertMessageNotFound)
         )
         eventApi.publish(event)
     }
@@ -224,7 +275,7 @@ class MainViewModel @Inject constructor(
         Log.d(TAG, "sendEventErrorGeneric()")
         val event = BaseEvent(
             EventTypes.SearchErrorGeneric,
-            mapOf(EventTypesMapper.MESSAGE to errorMessageGeneric)
+            mapOf(EventTypesMapper.MESSAGE to alertMessageGeneric)
         )
         eventApi.publish(event)
     }
@@ -233,7 +284,7 @@ class MainViewModel @Inject constructor(
         Log.d(TAG, "sendEventErrorNetwork()")
         val event = BaseEvent(
             EventTypes.SearchErrorNetwork,
-            mapOf(EventTypesMapper.MESSAGE to errorMessageNetwork)
+            mapOf(EventTypesMapper.MESSAGE to alertMessageNetwork)
         )
         eventApi.publish(event)
     }

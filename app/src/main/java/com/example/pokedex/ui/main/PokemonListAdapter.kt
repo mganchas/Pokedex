@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokedex.data.models.Pokemon
-import com.example.pokedex.databinding.RecyclerviewPokemonItemBinding
+import com.example.pokedex.databinding.PokemonSearchItemBinding
 import com.example.pokedex.domain.image.IImageApi
 import com.example.pokedex.domain.scope.ScopeApi
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ class PokemonListAdapter(
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var pokemons = mutableListOf<Pokemon>()
 
-    inner class PokemonViewHolder(private val binding : RecyclerviewPokemonItemBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class PokemonViewHolder(private val binding : PokemonSearchItemBinding) : RecyclerView.ViewHolder(binding.root)
     {
         fun bind(pokemon: Pokemon)
         {
@@ -38,7 +38,7 @@ class PokemonListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
     {
-        val binding = RecyclerviewPokemonItemBinding.inflate(inflater, parent, false)
+        val binding = PokemonSearchItemBinding.inflate(inflater, parent, false)
         return PokemonViewHolder(binding)
     }
 

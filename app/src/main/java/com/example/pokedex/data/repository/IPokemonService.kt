@@ -18,8 +18,8 @@ interface IPokemonService {
     suspend fun getPokemonsByUrl(@Url url : String) : PokemonSearch
 
     @GET("pokemon/{value}")
-    suspend fun getPokemonDetailsByValue(@Path("value") value : String) : Pokemon
+    suspend fun getPokemonByValue(@Path("value") value : String) : Pokemon
 
     @GET
-    suspend fun getPokemonDetailsByUrl(@Url url : String) : Pokemon
+    suspend fun getPokemonByUrl(@Url url : String) : Pokemon
 }

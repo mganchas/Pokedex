@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
@@ -37,12 +36,12 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
     var backColorLevel : Int = BACKCOLOR_LEVEL_PRIMARY
         private set
 
-    private var initialBackColorLevel : Int = BACKCOLOR_LEVEL_PRIMARY
-
     var buttonSizeLevel : Int = SIZE_LEVEL_MEDIUM
         private set
 
-    private lateinit var binding : ButtonCircleBinding
+    private var initialBackColorLevel : Int = BACKCOLOR_LEVEL_PRIMARY
+
+    private var binding : ButtonCircleBinding
 
     init {
         context.theme.obtainStyledAttributes(
@@ -65,12 +64,12 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         binding = ButtonCircleBinding.inflate(inflater, this, true)
 
-        initParentView()
+        initContainer()
         initIcon()
         updateView()
     }
 
-    private fun initParentView()
+    private fun initContainer()
     {
         initialBackColorLevel = backColorLevel
 
@@ -92,13 +91,10 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
 
     private fun initIcon()
     {
-        image ?: return
-        val img = image
-
         val iconSizeAsDP = getIconSize().toDP(context)
         binding.buttonCircleIcon.apply {
             this.layoutParams = LayoutParams(iconSizeAsDP, iconSizeAsDP)
-            this.setImageDrawable(img)
+            this.setImageDrawable(image)
             ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(ContextCompat.getColor(context, imageTint)))
         }
     }

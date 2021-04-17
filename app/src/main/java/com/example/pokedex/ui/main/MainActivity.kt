@@ -50,9 +50,10 @@ class MainActivity : AppCompatActivity()
         mapOf(
             EventTypes.ShowLoading to ::onShowLoading,
             EventTypes.HideLoading to ::onHideLoading,
-            EventTypes.SearchErrorInvalidInput to ::onSearchError,
-            EventTypes.SearchErrorGeneric to ::onSearchError,
-            EventTypes.SearchErrorNetwork to ::onSearchError
+            EventTypes.SearchNotFound to ::onAlertMessage,
+            EventTypes.SearchErrorInvalidInput to ::onAlertMessage,
+            EventTypes.SearchErrorGeneric to ::onAlertMessage,
+            EventTypes.SearchErrorNetwork to ::onAlertMessage
         )
     }
 
@@ -97,21 +98,6 @@ class MainActivity : AppCompatActivity()
         }
     }
 
-    /*
-        Note: It is true that this method (onSearchError) centralizes every search error type and
-        could have been spread into 'N' (error specific) different methods, to handle each error type.
-        But, for simplicity of this exercise, I've put all handlers into one method.
-    */
-    private fun onSearchError(payload: Map<String, Any>?) {
-        Log.d(TAG, "onSearchError() payload: $payload")
-        if (payload == null) {
-            throw NullPointerException("payload cannot be null for search errors")
-        }
-        val message = payload[EventTypesMapper.MESSAGE]?.toString() ?: throw IndexOutOfBoundsException("key not in map")
-        Log.d(TAG, "onSearchError() message: $message")
-        alertApi.showMessage(this, message)
-    }
-
     private fun onShowLoading(payload: Map<String, Any>?) {
         Log.d(TAG, "onShowLoading()")
         loadingApi.show()
@@ -120,6 +106,21 @@ class MainActivity : AppCompatActivity()
     private fun onHideLoading(payload: Map<String, Any>?) {
         Log.d(TAG, "onHideLoading()")
         loadingApi.hide()
+    }
+
+    /*
+        Note: It is true that this method (onSearchError) centralizes every search error type and
+        could have been spread into 'N' (error specific) different methods, to handle each error type.
+        But, for simplicity of this exercise, I've put all handlers into one method.
+    */
+    private fun onAlertMessage(payload: Map<String, Any>?) {
+        Log.d(TAG, "onSearchError() payload: $payload")
+        if (payload == null) {
+            throw NullPointerException("payload cannot be null for search errors")
+        }
+        val message = payload[EventTypesMapper.MESSAGE]?.toString() ?: throw IndexOutOfBoundsException("key not in map")
+        Log.d(TAG, "onSearchError() message: $message")
+        alertApi.showMessage(this, message)
     }
 
     private fun setSearchEditText() {

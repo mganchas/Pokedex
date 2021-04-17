@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="animation_loading">150dp</dimen>
-
     <dimen name="default_elevation">6dp</dimen>
-
+    <dimen name="avatar">150dp</dimen>
     <dimen name="outer_big_size">60dp</dimen>
     <dimen name="inner_big_size">30dp</dimen>
-
     <dimen name="outer_medium_size">50dp</dimen>
     <dimen name="inner_medium_size">18dp</dimen>
-
     <dimen name="outer_smalldium_size">40dp</dimen>
     <dimen name="inner_smalldium_size">15dp</dimen>
-
     <dimen name="outer_small_size">30dp</dimen>
     <dimen name="inner_small_size">15dp</dimen>
 </resources>

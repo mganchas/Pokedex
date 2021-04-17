@@ -2,9 +2,9 @@ package com.example.pokedex.data.models.stats
 
 import android.content.Context
 import android.util.Log
-import androidx.core.content.ContextCompat
 import com.example.pokedex.R
 import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
+import com.example.pokedex.data.types.PokemonStats
 
 class PokemonStatDetailsAttack : IPokemonStatDetails {
     companion object {
@@ -16,8 +16,13 @@ class PokemonStatDetailsAttack : IPokemonStatDetails {
         return context.getString(R.string.stat_attack)
     }
 
-    override fun getColor(context: Context): Int {
-        Log.d(TAG, "getColor()")
-        return ContextCompat.getColor(context, R.color.attack)
+    override fun getIcon(context: Context): Int {
+        Log.d(TAG, "getIcon()")
+        return R.drawable.ic_sword
+    }
+
+    override fun getColorLevel(context: Context): Int {
+        Log.d(TAG, "getColorLevel()")
+        return PokemonStats.Attack.ordinal
     }
 }

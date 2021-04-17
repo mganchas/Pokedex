@@ -17,6 +17,7 @@
     <string name="hint_search">Criterio de búsqueda</string>
 
     <!-- alerts -->
+    <string name="alert_not_found">Sin resultados</string>
     <string name="alert_generic_error">Perdone, algo malo pasó. Por favor, intente otra vez</string>
     <string name="alert_input_invalid">Su criterio de búsqueda no es válido</string>
     <string name="alert_generic_network">Hubo un problema de conexión. Por favor, intente otra vez</string>
