@@ -1,11 +1,16 @@
 package com.example.pokedex.ui.main
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.pokedex.R
 import com.example.pokedex.data.events.BaseEvent
 import com.example.pokedex.data.mappers.EventTypesMapper
 import com.example.pokedex.data.models.Pokemon
@@ -13,6 +18,7 @@ import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.databinding.ActivityMainBinding
 import com.example.pokedex.domain.alerts.IAlertApi
 import com.example.pokedex.domain.events.IEventApi
+import com.example.pokedex.domain.image.IImageApi
 import com.example.pokedex.domain.loading.ILoadingApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
@@ -30,14 +36,15 @@ class MainActivity : AppCompatActivity()
     @Inject
     lateinit var loadingApi : ILoadingApi
 
+    @Inject
+    lateinit var imageApi : IImageApi
+
     companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
     private lateinit var binding: ActivityMainBinding
-
-    private val vm by viewModels<MainViewModel>()
-
     private lateinit var listAdapter: PokemonListAdapter
+    private val vm by viewModels<MainViewModel>()
 
     private val eventsMapper : Map<EventTypes, (Map<String, Any>?) -> Unit> by lazy {
         mapOf(
@@ -56,9 +63,11 @@ class MainActivity : AppCompatActivity()
         val view = binding.root
         setContentView(view)
 
+        setSearchEditText()
         setSearchButton()
         setPreviousButton()
         setNextButton()
+        setLimitsSpinner()
         setListAdapter()
         setRecyclerView()
     }
@@ -113,12 +122,25 @@ class MainActivity : AppCompatActivity()
         loadingApi.hide()
     }
 
+    private fun setSearchEditText() {
+        Log.d(TAG, "setSearchEditText()")
+        binding.searchEditText.addTextChangedListener(object : TextWatcher
+        {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun afterTextChanged(editText: Editable?) {
+                val newSearchValue = editText.toString()
+                Log.d(TAG, "setSearchEditText().afterTextChanged() newSearchValue: $newSearchValue")
+                vm.setSearchValue(newSearchValue)
+            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
+    }
+
     private fun setSearchButton() {
         Log.d(TAG, "setSearchButton()")
         binding.searchButton.setOnClickListener {
-            val inputValue = binding.editSearch.text.toString()
-            Log.d(TAG, "setSearchButton().onClick() inputValue: $inputValue")
-            vm.onSearch(inputValue)
+            Log.d(TAG, "setSearchButton().onClick()")
+            vm.onSearch()
         }
     }
 
@@ -138,16 +160,37 @@ class MainActivity : AppCompatActivity()
         }
     }
 
+    private fun setLimitsSpinner() {
+        Log.d(TAG, "setLimitsSpinner()")
+
+        ArrayAdapter.createFromResource(this, R.array.api_limits, android.R.layout.simple_spinner_item).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.limitsSpinner.adapter = adapter
+        }
+        binding.limitsSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, id: Long) {
+                Log.d(TAG, "setLimitsSpinner().onItemSelected()")
+                val selectedLimit = adapterView.getItemAtPosition(position).toString().toInt()
+                Log.d(TAG, "setLimitsSpinner().onItemSelected() selectedLimit: $selectedLimit")
+                vm.onNewLimit(selectedLimit)
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>) {
+                Log.d(TAG, "setLimitsSpinner().onNothingSelected()")
+            }
+        }
+    }
+
     private fun setListAdapter() {
         Log.d(TAG, "setListAdapter()")
-        listAdapter = PokemonListAdapter(this) {
+        listAdapter = PokemonListAdapter(this, imageApi) {
             vm.onPokemonDetail()
         }
     }
 
     private fun setRecyclerView() {
         Log.d(TAG, "setRecyclerView()")
-        binding.recyclerView.apply {
+        binding.pokemonsRecyclerView.apply {
             adapter = listAdapter
             layoutManager = LinearLayoutManager(this@MainActivity)
             setHasFixedSize(true)
@@ -167,25 +210,30 @@ class MainActivity : AppCompatActivity()
     private fun registerObservers() {
         Log.d(TAG, "registerObservers()")
         registerListObserver()
-        registerNavigationButtonsVisibilityObserver()
         registerPreviousNavigationButtonEnabledObserver()
         registerNextNavigationButtonEnabledObserver()
+        registerPokemonCountObserver()
     }
 
     private fun registerListObserver() {
         Log.d(TAG, "registerListObserver()")
-        vm.pokemons.observe(this, {
-            Log.d(TAG, "registerObservers().onObserve() it.size: ${it.size}")
-            updateList(it)
+        vm.pokemonSearch.observe(this, {
+            Log.d(TAG, "registerObservers().onObserve() list: $it")
+            when(it) {
+                null -> clearList()
+                else -> updateList(it.results)
+            }
         })
     }
 
-    private fun registerNavigationButtonsVisibilityObserver() {
-        Log.d(TAG, "registerNavigationButtonsVisibilityObserver()")
-        vm.areNavigationButtonsVisible.observe(this, {
-            Log.d(TAG, "registerNavigationButtonsVisibilityObserver().onObserve() value: $it")
-            binding.buttonsLayout.visibility = if (it) View.VISIBLE else View.GONE
-        })
+    private fun clearList() {
+        Log.d(TAG, "clearList()")
+        listAdapter.clearData()
+    }
+
+    private fun updateList(list : List<Pokemon>) {
+        Log.d(TAG, "updateList() list.size: ${list.size}")
+        listAdapter.setData(list)
     }
 
     private fun registerPreviousNavigationButtonEnabledObserver() {
@@ -212,27 +260,25 @@ class MainActivity : AppCompatActivity()
         })
     }
 
-    private fun updateList(list : MutableList<Pokemon>) {
-        Log.d(TAG, "updateList() list.size: ${list.size}")
-        listAdapter.setData(list)
+    private fun registerPokemonCountObserver() {
+        Log.d(TAG, "registerPokemonCountObserver()")
+        vm.pokemonsCount.observe(this, {
+            Log.d(TAG, "registerPokemonCountObserver().onObserve() value: $it")
+            binding.pokemonsCountTextView.text = getString(R.string.label_pokemons_count, it.toString())
+        })
     }
 
     private fun unregisterObservers() {
         Log.d(TAG, "unregisterObservers()")
         unregisterListObserver()
-        unregisterNavigationButtonsVisibilityObserver()
         unregisterPreviousNavigationButtonEnabledObserver()
         unregisterNextNavigationButtonEnabledObserver()
+        unregisterPokemonsCountObserver()
     }
 
     private fun unregisterListObserver() {
         Log.d(TAG, "unregisterListObserver()")
-        vm.pokemons.removeObservers(this)
-    }
-
-    private fun unregisterNavigationButtonsVisibilityObserver() {
-        Log.d(TAG, "unregisterListObserver()")
-        vm.areNavigationButtonsVisible.removeObservers(this)
+        vm.pokemonSearch.removeObservers(this)
     }
 
     private fun unregisterPreviousNavigationButtonEnabledObserver() {
@@ -243,5 +289,10 @@ class MainActivity : AppCompatActivity()
     private fun unregisterNextNavigationButtonEnabledObserver() {
         Log.d(TAG, "unregisterListObserver()")
         vm.isNextNavigationButtonEnabled.removeObservers(this)
+    }
+
+    private fun unregisterPokemonsCountObserver() {
+        Log.d(TAG, "unregisterPokemonsCountObserver()")
+        vm.pokemonsCount.removeObservers(this)
     }
 }

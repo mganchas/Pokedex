@@ -13,7 +13,7 @@ class PokemonStatDetailsAttack : IPokemonStatDetails {
 
     override fun getName(context: Context) : String {
         Log.d(TAG, "getName()")
-        return context.resources.getString(R.string.stat_attack)
+        return context.getString(R.string.stat_attack)
     }
 
     override fun getColor(context: Context): Int {

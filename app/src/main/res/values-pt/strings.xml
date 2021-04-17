@@ -2,7 +2,8 @@
 <resources>
     <!-- labels -->
     <string name="label_search_title">Bem-vindo(a) à Pokedex!</string>
-    <string name="label_search_subtitle">Podes obter todos os Pokemons ou procurar um em específico</string>
+    <string name="label_search_subtitle">Podes obter todos os Pokémons ou procurar um em específico</string>
+    <string name="label_pokemons_count">Pokémons encontrados: %1$s</string>
 
     <!-- Stats -->
     <string name="stat_hp">HP</string>

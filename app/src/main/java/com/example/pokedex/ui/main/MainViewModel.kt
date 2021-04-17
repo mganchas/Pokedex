@@ -9,11 +9,9 @@ import com.example.pokedex.R
 import com.example.pokedex.data.events.BaseEvent
 import com.example.pokedex.data.mappers.EventTypesMapper
 import com.example.pokedex.data.models.Pokemon
-import com.example.pokedex.data.models.PokemonDetails
 import com.example.pokedex.data.models.PokemonSearch
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
-import com.example.pokedex.domain.image.IImageApi
 import com.example.pokedex.domain.parsers.IUrlParserApi
 import com.example.pokedex.domain.web.IWebApi
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,21 +25,17 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     @ApplicationContext context: Context,
-    val imageApi: IImageApi,
-    val eventApi: IEventApi,
-    val webApi: IWebApi,
-    val urlParserApi: IUrlParserApi
+    private val eventApi: IEventApi,
+    private val webApi: IWebApi,
+    private val urlParserApi: IUrlParserApi
 ) : ViewModel()
 {
     companion object {
         private val TAG = MainViewModel::class.java.simpleName
     }
 
-    val pokemons: MutableLiveData<MutableList<Pokemon>> by lazy {
-        MutableLiveData<MutableList<Pokemon>>()
-    }
-    val areNavigationButtonsVisible: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(false)
+    val pokemonSearch: MutableLiveData<PokemonSearch> by lazy {
+        MutableLiveData<PokemonSearch>(null)
     }
     val isPreviousNavigationButtonEnabled: MutableLiveData<Boolean> by lazy {
         MutableLiveData(false)
@@ -49,86 +43,77 @@ class MainViewModel @Inject constructor(
     val isNextNavigationButtonEnabled: MutableLiveData<Boolean> by lazy {
         MutableLiveData(false)
     }
+    val pokemonsCount : MutableLiveData<Int> by lazy {
+        MutableLiveData(0)
+    }
 
-    private var pokemonSearch : PokemonSearch? = null
+    private var searchValue: String? = null
+    private var pageLimit = context.resources.getInteger(R.integer.api_default_limit)
 
-    private val errorMessageInputInvalid = context.resources.getString(R.string.alert_input_invalid)
-    private val errorMessageGeneric = context.resources.getString(R.string.alert_generic_error)
-    private val errorMessageNetwork = context.resources.getString(R.string.alert_generic_network)
+    private val errorMessageInputInvalid : String by lazy {
+        context.getString(R.string.alert_input_invalid)
+    }
+    private val errorMessageGeneric : String by lazy {
+        context.getString(R.string.alert_generic_error)
+    }
+    private val errorMessageNetwork : String by lazy {
+        context.getString(R.string.alert_generic_network)
+    }
 
     fun onPrevious() = viewModelScope.launch {
         Log.d(TAG, "onPrevious()")
-        val searchUrl = pokemonSearch?.previous ?: ""
+        val searchUrl = pokemonSearch.value?.previous ?: ""
         Log.d(TAG, "onPrevious() searchUrl: $searchUrl")
 
         if (searchUrl.isEmpty()) {
             throw NullPointerException("no previous url to navigate")
         }
 
-        sendEventShowLoading()
-        try {
-            clearPokemonList()
-            val searchResults = getPokemonsByUrl(searchUrl)
-            Log.d(TAG, "onEmptySearch() searchResults: $searchResults")
-
-            setAreNavigationButtonsVisible(searchResults.results.isNotEmpty())
-            setIsPreviousNavigationButtonsEnabled(searchResults.previous != null)
-            setIsNextNavigationButtonsEnabled(searchResults.next != null)
-
-            // TODO: implementar ...
-            pokemonSearch = searchResults
-            sendEventHideLoading()
-        } catch (e: Exception) {
-            sendEventHideLoading()
-            handleExceptions(e)
-        }
+        // TODO: igual ao search
     }
 
     fun onNext() = viewModelScope.launch {
         Log.d(TAG, "onNext()")
-        val searchUrl = pokemonSearch?.next ?: ""
+        val searchUrl = pokemonSearch.value?.next ?: ""
         Log.d(TAG, "onNext() searchUrl: $searchUrl")
 
         if (searchUrl.isEmpty()) {
             throw NullPointerException("no next url to navigate")
         }
 
-        sendEventShowLoading()
-        try {
-            clearPokemonList()
-            val searchResults = getPokemonsByUrl(searchUrl)
-            Log.d(TAG, "onEmptySearch() searchResults: $searchResults")
-
-            setAreNavigationButtonsVisible(searchResults.results.isNotEmpty())
-            setIsPreviousNavigationButtonsEnabled(searchResults.previous != null)
-            setIsNextNavigationButtonsEnabled(searchResults.next != null)
-
-            // TODO: implementar ...
-            pokemonSearch = searchResults
-            sendEventHideLoading()
-        } catch (e: Exception) {
-            sendEventHideLoading()
-            handleExceptions(e)
-        }
+        // TODO: igual ao search
     }
 
     fun onPokemonDetail() {
         Log.d(TAG, "onPokemonDetail()")
-        // TODO: implementar ...
+        // TODO: ir à lista e passar para o controller o value de 'Pokemon' ...
 
     }
 
-    fun onSearch(value: String) {
-        Log.d(TAG, "onSearch()")
+    fun onSearch() {
+        Log.d(TAG, "onSearch() searchValue: $searchValue")
+        val value = searchValue ?: ""
         when (value.isEmpty()) {
             true -> onEmptySearch()
             false -> onValueSearch(value)
         }
     }
 
+    fun onNewLimit(newLimit : Int) {
+        Log.d(TAG, "onNewLimit() newLimit: $newLimit")
+        pageLimit = newLimit
+        if (pokemonSearch.value != null) {
+            onSearch()
+        }
+    }
+
+    fun setSearchValue(newValue : String) {
+        Log.d(TAG, "setSearchValue() newValue: $newValue")
+        searchValue = newValue
+    }
+
     private fun onValueSearch(value: String) {
         Log.d(TAG, "onValueSearch() value: $value")
-
         // TODO: validar localmente (persistencia do dispositivo) se não tem já estes dados
     }
 
@@ -152,13 +137,14 @@ class MainViewModel @Inject constructor(
                     it.id = urlParserApi.getLastPath(it.url)
                     val pokemonDetails = getPokemonDetailsByUrl(it.url)
                     Log.d(TAG, "pokemonDetails: $pokemonDetails")
+                    it.sprites = pokemonDetails.sprites
                 }
 
-                setAreNavigationButtonsVisible(searchResults.results.isNotEmpty())
                 setIsPreviousNavigationButtonsEnabled(searchResults.previous != null)
                 setIsNextNavigationButtonsEnabled(searchResults.next != null)
+                setPokemonsCount(searchResults.count)
 
-                pokemonSearch = searchResults
+                pokemonSearch.value = searchResults
                 sendEventHideLoading()
             } catch (e: Exception) {
                 sendEventHideLoading()
@@ -170,7 +156,7 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemons() : PokemonSearch {
         Log.d(TAG, "getPokemons()")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemons()
+            webApi.getPokemonService().getPokemonsWithLimit(pageLimit)
         }
     }
 
@@ -181,7 +167,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getPokemonDetailsByUrl(url: String) : PokemonDetails {
+    private suspend fun getPokemonDetailsByUrl(url: String) : Pokemon {
         Log.d(TAG, "getPokemonByUrl()")
         return withContext(Dispatchers.IO) {
             webApi.getPokemonService().getPokemonDetailsByUrl(url)
@@ -190,7 +176,7 @@ class MainViewModel @Inject constructor(
 
     private fun clearPokemonList() = viewModelScope.launch {
         Log.d(TAG, "clearPokemonList()")
-        pokemons.value = mutableListOf()
+        pokemonSearch.value = null
     }
 
     private fun handleExceptions(e: Exception) {
@@ -205,16 +191,19 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun setAreNavigationButtonsVisible(value: Boolean) = viewModelScope.launch {
-        areNavigationButtonsVisible.value = value
-    }
-
     private fun setIsPreviousNavigationButtonsEnabled(value: Boolean) = viewModelScope.launch {
+        Log.d(TAG, "setIsPreviousNavigationButtonsEnabled() value: $value")
         isPreviousNavigationButtonEnabled.value = value
     }
 
     private fun setIsNextNavigationButtonsEnabled(value: Boolean) = viewModelScope.launch {
+        Log.d(TAG, "setIsNextNavigationButtonsEnabled() value: $value")
         isNextNavigationButtonEnabled.value = value
+    }
+
+    private fun setPokemonsCount(value: Int) = viewModelScope.launch {
+        Log.d(TAG, "setPokemonsCount() value: $value")
+        pokemonsCount.value = value
     }
 
     /*

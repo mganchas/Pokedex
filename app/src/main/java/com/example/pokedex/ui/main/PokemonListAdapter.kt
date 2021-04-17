@@ -4,14 +4,15 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pokedex.R
 import com.example.pokedex.data.models.Pokemon
 import com.example.pokedex.databinding.RecyclerviewPokemonItemBinding
+import com.example.pokedex.domain.image.IImageApi
 import com.example.pokedex.domain.scope.ScopeApi
 import kotlinx.coroutines.launch
 
 class PokemonListAdapter(
     context: Context,
+    private val imageApi : IImageApi,
     private val onItemClick: (Pokemon) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
@@ -25,8 +26,9 @@ class PokemonListAdapter(
             binding.apply {
                 pokemonId.text = pokemon.id.toString()
                 pokemonName.text = pokemon.name
-                //pokemonImage.setImageBitmap(pokemon.image)
-                pokemonImage.setImageResource(R.drawable.ic_pokeball)
+                pokemon.sprites?.frontShiny?.let {
+                    imageApi.loadImageFromUrlIntoView(it, pokemonImage)
+                }
                 parentLayout.setOnClickListener {
                     onItemClick.invoke(pokemon)
                 }
@@ -46,10 +48,14 @@ class PokemonListAdapter(
 
     override fun getItemCount() = pokemons.size
 
+    fun clearData() {
+        pokemons.clear()
+    }
+
     fun setData(pokemonList: List<Pokemon>) {
         // to prevent racing conditions
         synchronized(this) {
-            pokemons.clear()
+            clearData()
             pokemons.addAll(pokemonList)
             updateView()
         }

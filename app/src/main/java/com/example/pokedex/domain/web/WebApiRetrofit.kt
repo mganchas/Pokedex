@@ -19,7 +19,7 @@ class WebApiRetrofit @Inject constructor(
 
     private val instance by lazy {
         Retrofit.Builder()
-            .baseUrl(appContext.resources.getString(R.string.api_base_url))
+            .baseUrl(appContext.getString(R.string.api_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

@@ -19,7 +19,7 @@ class AlertApiToast : IAlertApi
 
     override fun showMessage(context: Context, @StringRes resource: Int) {
         Log.d(TAG, "showMessage()")
-        showMessage(context, context.resources.getString(resource))
+        showMessage(context, context.getString(resource))
     }
 
     override fun showGenericErrorMessage(context: Context) {

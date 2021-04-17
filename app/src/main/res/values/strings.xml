@@ -3,7 +3,8 @@
 
     <!-- labels -->
     <string name="label_search_title">Welcome to Pokedex!</string>
-    <string name="label_search_subtitle">You can retrieve all Pokemons are find a specific one</string>
+    <string name="label_search_subtitle">You can retrieve all Pokémons are find a specific one</string>
+    <string name="label_pokemons_count">Pokémons found: %1$s</string>
 
     <!-- Stats -->
     <string name="stat_hp">HP</string>

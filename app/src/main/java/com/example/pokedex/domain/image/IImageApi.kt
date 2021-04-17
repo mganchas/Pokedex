@@ -1,5 +1,7 @@
 package com.example.pokedex.domain.image
 
+import android.widget.ImageView
+
 interface IImageApi {
-    fun loadImageFromUrl(url: String)
+    fun loadImageFromUrlIntoView(url: String, view: ImageView)
 }

@@ -4,54 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parentLayout"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
     android:layout_marginVertical="5dp"
     android:background="@drawable/rounded_rectangle"
     android:padding="10dp">
 
-    <LinearLayout
-        android:id="@+id/pokemonSprite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/pokemonImage"
+        android:layout_width="@dimen/outer_medium_size"
+        android:layout_height="@dimen/outer_medium_size"
+        android:layout_gravity="center"
+        android:layout_marginVertical="5dp"
+        android:layout_marginStart="10dp"
+        android:contentDescription="@string/pokemon_image_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/pokemonImage"
-            android:layout_width="@dimen/inner_big_size"
-            android:layout_height="@dimen/inner_big_size"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:contentDescription="@string/pokemon_image_description"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/ic_pokeball"
-            tools:visibility="visible" />
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/pokemonAnimation"
-            android:layout_width="@dimen/inner_big_size"
-            android:layout_height="@dimen/inner_big_size"
-            android:layout_margin="10dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:lottie_autoPlay="true"
-            app:lottie_fileName="loading_animation_image.json"
-            app:lottie_loop="true" />
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/ic_pokeball" />
 
     <TextView
         android:id="@+id/pokemonName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
-        android:layout_marginVertical="10dp"
+        android:layout_marginVertical="5dp"
         android:layout_marginStart="20dp"
         android:textAlignment="textStart"
         android:textColor="@color/black"
@@ -59,9 +36,9 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/pokemonId"
-        app:layout_constraintStart_toEndOf="@id/pokemonSprite"
+        app:layout_constraintStart_toEndOf="@id/pokemonImage"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Pikachu" />
+        tools:text="Pikachu"/>
 
     <TextView
         android:id="@+id/pokemonId"

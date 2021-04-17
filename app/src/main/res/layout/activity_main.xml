@@ -16,17 +16,17 @@
         android:theme="@style/MyThemeOverlay_Toolbar"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="@string/app_name"/>
+        app:title="@string/app_name" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:paddingHorizontal="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        android:paddingHorizontal="20dp">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/titleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -40,7 +40,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/subTitle"
+            android:id="@+id/subTitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -51,7 +51,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/editSearchLayout"
@@ -59,16 +59,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/recyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/subTitle">
+            app:layout_constraintTop_toBottomOf="@id/subTitleTextView">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/editSearchParent"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
                 android:backgroundTint="@color/gray_light"
                 android:hint="@string/hint_search"
@@ -77,14 +75,14 @@
                 app:boxBackgroundColor="@android:color/transparent"
                 app:boxStrokeColor="@color/gray_light"
                 app:endIconMode="clear_text"
-                app:errorEnabled="true"
+                app:errorEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/searchButton"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editSearch"
+                    android:id="@+id/searchEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textCapSentences" />
@@ -103,17 +101,31 @@
                 app:size="medium" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/pokemonsCountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:text="@string/label_pokemons_count"
+            android:textColor="@color/gray_dark"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editSearchLayout" />
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/pokemonsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:background="@android:color/transparent"
             app:layout_constraintBottom_toTopOf="@+id/buttonsLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editSearchLayout"
-            tools:listitem="@layout/recyclerview_pokemon_item" />
+            app:layout_constraintTop_toBottomOf="@+id/pokemonsCountTextView"
+            tools:listitem="@layout/recyclerview_pokemon_item"/>
 
         <LinearLayout
             android:id="@+id/buttonsLayout"
@@ -124,11 +136,9 @@
             android:layout_marginBottom="5dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="visible">
+            app:layout_constraintStart_toStartOf="parent">
 
             <com.example.pokedex.ui.components.ButtonCircle
                 android:id="@+id/previousPageButton"
@@ -140,6 +150,11 @@
                 app:image="@drawable/ic_arrow_left"
                 app:imageTint="@color/red_dark"
                 app:size="medium" />
+
+            <Spinner
+                android:id="@+id/limitsSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <com.example.pokedex.ui.components.ButtonCircle
                 android:id="@+id/nextPageButton"

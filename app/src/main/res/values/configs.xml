@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="api_base_url" translatable="false">https://pokeapi.co/api/v2/</string>
+    <integer name="api_default_limit">10</integer>
+    <string-array name="api_limits">
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
 </resources>
