@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.pokedex.R
 import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
-import com.example.pokedex.data.types.PokemonStats
+import com.example.pokedex.data.types.PokemonStatTypes
 
 class PokemonStatDetailsSpecialDefense : IPokemonStatDetails {
     companion object {
@@ -25,6 +25,6 @@ class PokemonStatDetailsSpecialDefense : IPokemonStatDetails {
 
     override fun getColorLevel(): Int {
         Log.d(TAG, "getColorLevel()")
-        return PokemonStats.SpecialDefense.ordinal
+        return PokemonStatTypes.SpecialDefense.ordinal
     }
 }

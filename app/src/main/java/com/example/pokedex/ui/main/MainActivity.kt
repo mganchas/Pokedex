@@ -20,7 +20,7 @@ import com.example.pokedex.databinding.ActivityMainBinding
 import com.example.pokedex.domain.alerts.IAlertApi
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.image.IImageApi
-import com.example.pokedex.domain.loading.ILoadingApi
+import com.example.pokedex.domain.animation.IAnimationApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
 import java.io.Serializable
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity()
     lateinit var eventApi : IEventApi
 
     @Inject
-    lateinit var loadingApi : ILoadingApi
+    lateinit var animationApi : IAnimationApi
 
     @Inject
     lateinit var imageApi : IImageApi
@@ -54,19 +54,24 @@ class MainActivity : AppCompatActivity()
             EventTypes.ShowLoading to ::onShowLoading,
             EventTypes.HideLoading to ::onHideLoading,
             EventTypes.NavigateTo to ::onNavigation,
-            EventTypes.SearchNotFound to ::onAlertMessage,
-            EventTypes.SearchErrorInvalidInput to ::onAlertMessage,
-            EventTypes.SearchErrorGeneric to ::onAlertMessage,
-            EventTypes.SearchErrorNetwork to ::onAlertMessage
+            EventTypes.PokemonNotFound to ::onAlertMessage,
+            EventTypes.InvalidInput to ::onAlertMessage,
+            EventTypes.ErrorGeneric to ::onAlertMessage,
+            EventTypes.ErrorNetwork to ::onAlertMessage
         )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        if (savedInstanceState != null) {
+            onRestoreInstanceState(savedInstanceState)
+        }
 
         setSearchEditText()
         setSearchButton()
@@ -77,8 +82,15 @@ class MainActivity : AppCompatActivity()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        // TODO: implementar...
+        Log.d(TAG, "onSaveInstanceState()")
+        vm.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        Log.d(TAG, "onRestoreInstanceState()")
+        super.onRestoreInstanceState(savedInstanceState)
+        vm.onRestoreInstanceState(savedInstanceState)
     }
 
     override fun onResume() {
@@ -103,18 +115,24 @@ class MainActivity : AppCompatActivity()
             eventMapperFunction(event.payload)
         } catch (e : Exception) {
             e.printStackTrace()
-            alertApi.showGenericErrorMessage(this)
+            runOnUiThread {
+                alertApi.showGenericErrorMessage(this)
+            }
         }
     }
 
     private fun onShowLoading(payload: Map<String, Any>?) {
         Log.d(TAG, "onShowLoading() payload: $payload")
-        loadingApi.show()
+        runOnUiThread {
+            animationApi.show()
+        }
     }
 
     private fun onHideLoading(payload: Map<String, Any>?) {
         Log.d(TAG, "onHideLoading() payload: $payload")
-        loadingApi.hide()
+        runOnUiThread {
+            animationApi.hide()
+        }
     }
 
     private fun onNavigation(payload: Map<String, Any>?) {
@@ -122,7 +140,7 @@ class MainActivity : AppCompatActivity()
         val destinationPage = (
             payload?.get(EventTypesMapper.NAVIGATION_TO) ?: throw IndexOutOfBoundsException("destination page missing")
         ) as Class<*>
-        val destinationData = payload[EventTypesMapper.NAVIGATION_DATA] as Serializable
+        val destinationData = payload[EventTypesMapper.NAVIGATION_DATA] as Serializable?
 
         val intent = Intent(this, destinationPage)
         intent.putExtra(EventTypesMapper.NAVIGATION_DATA, destinationData)
@@ -135,13 +153,16 @@ class MainActivity : AppCompatActivity()
         But, for simplicity of this exercise, I've put all handlers into one method.
     */
     private fun onAlertMessage(payload: Map<String, Any>?) {
-        Log.d(TAG, "onSearchError() payload: $payload")
+        Log.d(TAG, "onAlertMessage() payload: $payload")
         if (payload == null) {
             throw NullPointerException("payload cannot be null for search errors")
         }
         val message = payload[EventTypesMapper.MESSAGE]?.toString() ?: throw IndexOutOfBoundsException("key not in map")
-        Log.d(TAG, "onSearchError() message: $message")
-        alertApi.showMessage(this, message)
+        Log.d(TAG, "onAlertMessage() message: $message")
+
+        runOnUiThread {
+            alertApi.showMessage(this, message)
+        }
     }
 
     private fun setSearchEditText() {
@@ -152,7 +173,7 @@ class MainActivity : AppCompatActivity()
             override fun afterTextChanged(editText: Editable?) {
                 val newSearchValue = editText.toString()
                 Log.d(TAG, "setSearchEditText().afterTextChanged() newSearchValue: $newSearchValue")
-                vm.setSearchValue(newSearchValue)
+                vm.setSearchText(newSearchValue)
             }
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
@@ -309,12 +330,12 @@ class MainActivity : AppCompatActivity()
     }
 
     private fun unregisterPreviousNavigationButtonEnabledObserver() {
-        Log.d(TAG, "unregisterListObserver()")
+        Log.d(TAG, "unregisterPreviousNavigationButtonEnabledObserver()")
         vm.isPreviousNavigationButtonEnabled.removeObservers(this)
     }
 
     private fun unregisterNextNavigationButtonEnabledObserver() {
-        Log.d(TAG, "unregisterListObserver()")
+        Log.d(TAG, "unregisterNextNavigationButtonEnabledObserver()")
         vm.isNextNavigationButtonEnabled.removeObservers(this)
     }
 

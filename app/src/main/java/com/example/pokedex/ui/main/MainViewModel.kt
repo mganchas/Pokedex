@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.R
@@ -30,7 +29,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     @ApplicationContext context: Context,
-    private val state : SavedStateHandle,
     private val eventApi: IEventApi,
     private val webApi: IWebApi,
     private val urlParserApi: IUrlParserApi
@@ -72,14 +70,16 @@ class MainViewModel @Inject constructor(
         context.getString(R.string.alert_generic_network)
     }
 
-    init {
-        setPokemonSearch(state.get<PokemonSearch?>(KEY_POKEMON_SEARCH))
-        // TODO: implementar...
+    fun onSaveInstanceState(bundle: Bundle) {
+        Log.d(TAG, "onSaveInstanceState()")
+        savePokemonSearchState(bundle)
+        saveSearchTextState(bundle)
     }
 
-    fun onSaveInstanceState() {
-        Log.d(TAG, "onSaveInstanceState()")
-        // TODO: implementar...
+    fun onRestoreInstanceState(bundle: Bundle) {
+        Log.d(TAG, "onRestoreInstanceState()")
+        getPokemonSearchState(bundle)
+        getSearchTextState(bundle)
     }
 
     fun onPrevious() {
@@ -126,17 +126,33 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun setSearchValue(newValue : String) {
-        Log.d(TAG, "setSearchValue() newValue: $newValue")
+    fun setSearchText(newValue : String) {
+        Log.d(TAG, "setSearchText() newValue: $newValue")
         searchText = newValue.trim().toLowerCase(Locale.ROOT)
     }
 
-    private fun savePokemonSearchState(value : PokemonSearch?) {
-        state.set(KEY_POKEMON_SEARCH, value)
+    private fun savePokemonSearchState(bundle: Bundle) {
+        Log.d(TAG, "savePokemonSearchState()")
+        bundle.putSerializable(KEY_POKEMON_SEARCH, pokemonSearch.value)
     }
 
-    private fun saveSearchTextState(value : String?) {
-        state.set(KEY_SEARCH_TEXT, value)
+    private fun saveSearchTextState(bundle: Bundle) {
+        Log.d(TAG, "saveSearchTextState()")
+        bundle.putString(KEY_SEARCH_TEXT, searchText)
+    }
+
+    private fun getPokemonSearchState(bundle: Bundle) {
+        Log.d(TAG, "getPokemonSearchState()")
+        bundle.getSerializable(KEY_POKEMON_SEARCH)?.let {
+            setPokemonSearch(it as PokemonSearch?)
+        }
+    }
+
+    private fun getSearchTextState(bundle: Bundle) {
+        Log.d(TAG, "getSearchTextState()")
+        bundle.getString(KEY_SEARCH_TEXT)?.let {
+            setSearchText(it)
+        }
     }
 
     private fun onValueSearch(value: String) = viewModelScope.launch {
@@ -162,8 +178,6 @@ class MainViewModel @Inject constructor(
         finally {
             sendEventHideLoading()
         }
-
-        // TODO: validar localmente (persistencia do dispositivo) se não tem já estes dados
     }
 
     private suspend fun getPokemonByValue(value: String) : Pokemon {
@@ -287,7 +301,7 @@ class MainViewModel @Inject constructor(
     private fun sendEventErrorInvalidInput() {
         Log.d(TAG, "sendEventErrorInvalidInput()")
         val event = BaseEvent(
-            EventTypes.SearchErrorInvalidInput,
+            EventTypes.InvalidInput,
             mapOf(EventTypesMapper.MESSAGE to alertMessageInputInvalid)
         )
         eventApi.publish(event)
@@ -296,7 +310,7 @@ class MainViewModel @Inject constructor(
     private fun sendEventNotFound() {
         Log.d(TAG, "sendEventNotFound()")
         val event = BaseEvent(
-            EventTypes.SearchNotFound,
+            EventTypes.PokemonNotFound,
             mapOf(EventTypesMapper.MESSAGE to alertMessageNotFound)
         )
         eventApi.publish(event)
@@ -305,7 +319,7 @@ class MainViewModel @Inject constructor(
     private fun sendEventErrorGeneric() {
         Log.d(TAG, "sendEventErrorGeneric()")
         val event = BaseEvent(
-            EventTypes.SearchErrorGeneric,
+            EventTypes.ErrorGeneric,
             mapOf(EventTypesMapper.MESSAGE to alertMessageGeneric)
         )
         eventApi.publish(event)
@@ -314,7 +328,7 @@ class MainViewModel @Inject constructor(
     private fun sendEventErrorNetwork() {
         Log.d(TAG, "sendEventErrorNetwork()")
         val event = BaseEvent(
-            EventTypes.SearchErrorNetwork,
+            EventTypes.ErrorNetwork,
             mapOf(EventTypesMapper.MESSAGE to alertMessageNetwork)
         )
         eventApi.publish(event)

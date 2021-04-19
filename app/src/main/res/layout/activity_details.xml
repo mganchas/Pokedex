@@ -4,88 +4,140 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_light"
-    android:paddingHorizontal="20dp">
+    android:background="@color/gray_light">
 
-    <LinearLayout
-        android:id="@+id/spritesContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="@dimen/outer_smalldium_size"
-            android:layout_height="@dimen/outer_smalldium_size"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="10dp"
-            android:contentDescription="@string/pokemon_details_icon_left_arrow"
-            app:srcCompat="@drawable/ic_arrow_left"
-            app:tint="@color/gray_medium" />
-
-        <com.synnapps.carouselview.CarouselView
-            android:id="@+id/spritesCarouselView"
-            android:layout_width="@dimen/avatarContainer"
-            android:layout_height="@dimen/avatarContainer"
-            app:fillColor="@color/red_light"
-            app:pageColor="#00000000"
-            app:radius="6dp"
-            app:slideInterval="2000"
-            app:strokeColor="@color/gray_medium"
-            app:strokeWidth="1dp"
-            app:indicatorMarginVertical="5dp"/>
-
-        <ImageView
-            android:layout_width="@dimen/outer_smalldium_size"
-            android:layout_height="@dimen/outer_smalldium_size"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="10dp"
-            android:contentDescription="@string/pokemon_details_icon_right_arrow"
-            app:srcCompat="@drawable/ic_arrow_right"
-            app:tint="@color/gray_medium" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/pokemonName"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spritesContainer"
-        tools:text="Pikachu" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="4dp"
+        android:theme="@style/MyThemeOverlay_Toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <TextView
-        android:id="@+id/pokemonDataTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="20dp"
-        android:text="@string/label_pokemon_data"
-        android:textColor="@color/gray_dark"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pokemonName" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pokemonDataRecyclerView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
-        android:background="@android:color/transparent"
+        android:paddingHorizontal="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pokemonDataTextView"
-        tools:listitem="@layout/pokemon_stats_item" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
+        <LinearLayout
+            android:id="@+id/spritesContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="@dimen/outer_smalldium_size"
+                android:layout_height="@dimen/outer_smalldium_size"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:contentDescription="@string/pokemon_details_icon_left_arrow"
+                app:srcCompat="@drawable/ic_arrow_left"
+                app:tint="@color/gray_medium" />
+
+            <com.synnapps.carouselview.CarouselView
+                android:id="@+id/spritesCarouselView"
+                android:layout_width="@dimen/avatarContainer"
+                android:layout_height="@dimen/avatarContainer"
+                app:fillColor="@color/red_light"
+                app:indicatorMarginVertical="5dp"
+                app:pageColor="#00000000"
+                app:radius="6dp"
+                app:slideInterval="2000"
+                app:strokeColor="@color/gray_medium"
+                app:strokeWidth="1dp" />
+
+            <ImageView
+                android:layout_width="@dimen/outer_smalldium_size"
+                android:layout_height="@dimen/outer_smalldium_size"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:contentDescription="@string/pokemon_details_icon_right_arrow"
+                app:srcCompat="@drawable/ic_arrow_right"
+                app:tint="@color/gray_medium" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/pokemonName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spritesContainer"
+            tools:text="Pikachu" />
+
+        <TextView
+            android:id="@+id/pokemonDataTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:text="@string/label_pokemon_data"
+            android:textColor="@color/gray_dark"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pokemonName" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pokemonDataRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toTopOf="@id/favouriteContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pokemonDataTextView"
+            tools:listitem="@layout/pokemon_stats_item" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/favouriteContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/labelFavourite"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="@string/label_favourite_pokemon"
+                android:textColor="@color/gray_dark"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/favouriteButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.example.pokedex.ui.components.ButtonCircle
+                android:id="@+id/favouriteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:backColor="secondary"
+                app:image="@drawable/ic_star"
+                app:imageTint="@color/gold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:size="medium" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,19 +1,18 @@
-package com.example.pokedex.domain.loading
+package com.example.pokedex.domain.animation
 
 import android.app.Dialog
 import android.content.Context
 import android.util.Log
 import com.example.pokedex.R
 import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class LoadingApiDialog @Inject constructor(
+class AnimationApiDialog @Inject constructor(
     @ActivityContext private val activityContext: Context
-) : ILoadingApi
+) : IAnimationApi
 {
     companion object {
-        private val TAG = LoadingApiDialog::class.java.simpleName
+        private val TAG = AnimationApiDialog::class.java.simpleName
     }
 
     private lateinit var dialog : Dialog

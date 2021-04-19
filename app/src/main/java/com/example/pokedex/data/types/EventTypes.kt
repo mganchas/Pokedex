@@ -4,8 +4,9 @@ enum class EventTypes {
     ShowLoading,
     HideLoading,
     NavigateTo,
-    SearchErrorInvalidInput,
-    SearchNotFound,
-    SearchErrorGeneric,
-    SearchErrorNetwork
+    InvalidInput,
+    PokemonNotFound,
+    FavouritePokemon,
+    ErrorGeneric,
+    ErrorNetwork
 }

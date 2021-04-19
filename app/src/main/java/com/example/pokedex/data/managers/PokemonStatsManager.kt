@@ -3,40 +3,40 @@ package com.example.pokedex.data.managers
 import android.util.Log
 import com.example.pokedex.data.models.stats.*
 import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
-import com.example.pokedex.data.types.PokemonStats
+import com.example.pokedex.data.types.PokemonStatTypes
 
 object PokemonStatsManager
 {
     private val TAG = PokemonStatsManager::class.java.simpleName
 
-    private val statsMap : Map<PokemonStats, IPokemonStatDetails> by lazy {
+    private val statsDetailsMap : Map<PokemonStatTypes, IPokemonStatDetails> by lazy {
         mapOf(
-            PokemonStats.HP to PokemonStatDetailsHP(),
-            PokemonStats.Attack to PokemonStatDetailsAttack(),
-            PokemonStats.SpecialAttack to PokemonStatDetailsSpecialAttack(),
-            PokemonStats.Defense to PokemonStatDetailsDefense(),
-            PokemonStats.SpecialDefense to PokemonStatDetailsSpecialDefense(),
-            PokemonStats.Speed to PokemonStatDetailsSpeed()
+            PokemonStatTypes.HP to PokemonStatDetailsHP(),
+            PokemonStatTypes.Attack to PokemonStatDetailsAttack(),
+            PokemonStatTypes.SpecialAttack to PokemonStatDetailsSpecialAttack(),
+            PokemonStatTypes.Defense to PokemonStatDetailsDefense(),
+            PokemonStatTypes.SpecialDefense to PokemonStatDetailsSpecialDefense(),
+            PokemonStatTypes.Speed to PokemonStatDetailsSpeed()
         )
     }
 
-    private val rawStatsMap : Map<String, PokemonStats> by lazy {
+    private val rawStatsMap : Map<String, PokemonStatTypes> by lazy {
         mapOf(
-            "hp" to PokemonStats.HP,
-            "attack" to PokemonStats.Attack,
-            "special-attack" to PokemonStats.SpecialAttack,
-            "defense" to PokemonStats.Defense,
-            "special-defense" to PokemonStats.SpecialDefense,
-            "speed" to PokemonStats.Speed
+            "hp" to PokemonStatTypes.HP,
+            "attack" to PokemonStatTypes.Attack,
+            "special-attack" to PokemonStatTypes.SpecialAttack,
+            "defense" to PokemonStatTypes.Defense,
+            "special-defense" to PokemonStatTypes.SpecialDefense,
+            "speed" to PokemonStatTypes.Speed
         )
     }
 
-    fun getStatDetailsByType(statType : PokemonStats) : IPokemonStatDetails {
+    fun getStatDetailsByType(statType : PokemonStatTypes) : IPokemonStatDetails {
         Log.d(TAG, "getStatDetailsByType() statType: $statType")
-        return statsMap[statType] ?: throw IndexOutOfBoundsException("invalid stat: ${statType.name}")
+        return statsDetailsMap[statType] ?: throw IndexOutOfBoundsException("invalid stat: ${statType.name}")
     }
 
-    fun getStatTypeByRawValue(rawValue : String) : PokemonStats {
+    fun getStatTypeByRawValue(rawValue : String) : PokemonStatTypes {
         Log.d(TAG, "getStatTypeByRawValue() rawValue: $rawValue")
         return rawStatsMap[rawValue] ?: throw IndexOutOfBoundsException("invalid stat: $rawValue")
     }

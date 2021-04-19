@@ -6,6 +6,7 @@
     <string name="label_search_subtitle">You can retrieve all Pokémons are find a specific one</string>
     <string name="label_pokemons_count">Pokémons found: %1$s</string>
     <string name="label_pokemon_data">Pokémon data:</string>
+    <string name="label_favourite_pokemon">Click the button if you like this Pokemon!</string>
 
     <!-- Stats -->
     <string name="stat_hp">HP</string>
@@ -15,12 +16,12 @@
     <string name="stat_special_defense">Special Defense</string>
     <string name="stat_speed">Speed</string>
 
+    <!-- hints -->
+    <string name="hint_search">Search criteria</string>
+
     <!-- alert -->
     <string name="alert_not_found">Not found</string>
     <string name="alert_generic_error">Something went wrong. Please, try again</string>
     <string name="alert_input_invalid">Your search criteria is not valid</string>
     <string name="alert_generic_network">There was a connection issue. Please, try again</string>
-
-    <!-- hints -->
-    <string name="hint_search">Search criteria</string>
 </resources>

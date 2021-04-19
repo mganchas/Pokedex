@@ -5,7 +5,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red_light">#FF0000</color>
     <color name="red_dark">#CC0000</color>
-    <color name="gold">#FFDE00</color>
+    <color name="gold">#f1c40f</color>
     <color name="blue">#3B4CCA</color>
     <color name="gray_dark">#969696</color>
     <color name="gray_medium">#e6e6e6</color>
@@ -18,5 +18,5 @@
     <color name="special_attack">#e74c3c</color>
     <color name="defense">#3498db</color>
     <color name="special_defense">#9b59b6</color>
-    <color name="speed">#f1c40f</color>
+    <color name="speed">#778ca3</color>
 </resources>
