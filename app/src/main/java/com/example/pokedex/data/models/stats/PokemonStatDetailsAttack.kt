@@ -1,7 +1,9 @@
 package com.example.pokedex.data.models.stats
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.example.pokedex.R
 import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
 import com.example.pokedex.data.types.PokemonStats
@@ -16,12 +18,12 @@ class PokemonStatDetailsAttack : IPokemonStatDetails {
         return context.getString(R.string.stat_attack)
     }
 
-    override fun getIcon(context: Context): Int {
+    override fun getIcon(context: Context): Drawable? {
         Log.d(TAG, "getIcon()")
-        return R.drawable.ic_sword
+        return ContextCompat.getDrawable(context, R.drawable.ic_archery)
     }
 
-    override fun getColorLevel(context: Context): Int {
+    override fun getColorLevel(): Int {
         Log.d(TAG, "getColorLevel()")
         return PokemonStats.Attack.ordinal
     }

@@ -3,4 +3,6 @@
     <string name="button_circle_image_description" translatable="false">ButtonCircle</string>
     <string name="pokemon_image_description" translatable="false">PokemonImage</string>
     <string name="pokemon_stat_icon_description" translatable="false">PokemonStatIcon</string>
+    <string name="pokemon_details_icon_left_arrow" translatable="false">PokemonDetailsLeftArrow</string>
+    <string name="pokemon_details_icon_right_arrow" translatable="false">PokemonDetailsRightArrow</string>
 </resources>

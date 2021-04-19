@@ -50,6 +50,7 @@ class PokemonListAdapter(
 
     fun clearData() {
         pokemons.clear()
+        updateView()
     }
 
     fun setData(pokemonList: List<Pokemon>) {

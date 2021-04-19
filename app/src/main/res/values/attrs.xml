@@ -17,18 +17,4 @@
             <enum name="big" value="3"/>
         </attr>
     </declare-styleable>
-
-    <declare-styleable name="PokemonStatsItem">
-        <attr name="statImage" format="reference" />
-        <attr name="statName" format="string" />
-        <attr name="statValue" format="string" />
-        <attr name="statBackColor" format="enum">
-            <enum name="hp" value="0"/>
-            <enum name="attack" value="1"/>
-            <enum name="specialAttack" value="2"/>
-            <enum name="defense" value="3"/>
-            <enum name="specialDefense" value="4"/>
-            <enum name="speed" value="5"/>
-        </attr>
-    </declare-styleable>
 </resources>

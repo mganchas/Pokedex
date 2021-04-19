@@ -4,6 +4,7 @@
     <string name="label_search_title">¡Bienvenido(a) a Pokedex!</string>
     <string name="label_search_subtitle">Puedes obtener todos los Pokémons o buscar uno específico</string>
     <string name="label_pokemons_count">Pokémons encontrados: %1$s</string>
+    <string name="label_pokemon_data">Datos del Pokémon:</string>
 
     <!-- Stats -->
     <string name="stat_hp">HP</string>

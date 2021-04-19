@@ -1,5 +1,6 @@
 package com.example.pokedex.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,6 +23,7 @@ import com.example.pokedex.domain.image.IImageApi
 import com.example.pokedex.domain.loading.ILoadingApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
+import java.io.Serializable
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,14 +44,16 @@ class MainActivity : AppCompatActivity()
     companion object {
         private val TAG = MainActivity::class.java.simpleName
     }
+
     private lateinit var binding: ActivityMainBinding
-    private lateinit var listAdapter: PokemonListAdapter
+    private lateinit var pokemonListAdapter: PokemonListAdapter
     private val vm by viewModels<MainViewModel>()
 
     private val eventsMapper : Map<EventTypes, (Map<String, Any>?) -> Unit> by lazy {
         mapOf(
             EventTypes.ShowLoading to ::onShowLoading,
             EventTypes.HideLoading to ::onHideLoading,
+            EventTypes.NavigateTo to ::onNavigation,
             EventTypes.SearchNotFound to ::onAlertMessage,
             EventTypes.SearchErrorInvalidInput to ::onAlertMessage,
             EventTypes.SearchErrorGeneric to ::onAlertMessage,
@@ -69,8 +73,12 @@ class MainActivity : AppCompatActivity()
         setPreviousButton()
         setNextButton()
         setLimitsSpinner()
-        setListAdapter()
-        setRecyclerView()
+        setRecyclerView { setPokemonSearchAdapter() }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        // TODO: implementar...
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -94,18 +102,31 @@ class MainActivity : AppCompatActivity()
             val eventMapperFunction = eventsMapper[event.eventType] ?: throw NullPointerException("invalid event type")
             eventMapperFunction(event.payload)
         } catch (e : Exception) {
-
+            e.printStackTrace()
+            alertApi.showGenericErrorMessage(this)
         }
     }
 
     private fun onShowLoading(payload: Map<String, Any>?) {
-        Log.d(TAG, "onShowLoading()")
+        Log.d(TAG, "onShowLoading() payload: $payload")
         loadingApi.show()
     }
 
     private fun onHideLoading(payload: Map<String, Any>?) {
-        Log.d(TAG, "onHideLoading()")
+        Log.d(TAG, "onHideLoading() payload: $payload")
         loadingApi.hide()
+    }
+
+    private fun onNavigation(payload: Map<String, Any>?) {
+        Log.d(TAG, "onNavigation() payload: $payload")
+        val destinationPage = (
+            payload?.get(EventTypesMapper.NAVIGATION_TO) ?: throw IndexOutOfBoundsException("destination page missing")
+        ) as Class<*>
+        val destinationData = payload[EventTypesMapper.NAVIGATION_DATA] as Serializable
+
+        val intent = Intent(this, destinationPage)
+        intent.putExtra(EventTypesMapper.NAVIGATION_DATA, destinationData)
+        startActivity(intent)
     }
 
     /*
@@ -182,17 +203,22 @@ class MainActivity : AppCompatActivity()
         }
     }
 
-    private fun setListAdapter() {
-        Log.d(TAG, "setListAdapter()")
-        listAdapter = PokemonListAdapter(this, imageApi) {
-            vm.onPokemonDetail()
+    private fun setPokemonSearchAdapter() {
+        Log.d(TAG, "setPokemonSearchAdapter()")
+        pokemonListAdapter = PokemonListAdapter(this, imageApi) {
+            vm.onPokemonDetail(it)
         }
     }
 
-    private fun setRecyclerView() {
+    /*
+        Note: adding some temporal coupling (recyclerView needs the adapter set up prior to
+        its own setting)
+    */
+    private fun setRecyclerView(preFunction : () -> Unit) {
         Log.d(TAG, "setRecyclerView()")
+        preFunction()
         binding.pokemonsRecyclerView.apply {
-            adapter = listAdapter
+            adapter = pokemonListAdapter
             layoutManager = LinearLayoutManager(this@MainActivity)
             setHasFixedSize(true)
         }
@@ -210,31 +236,31 @@ class MainActivity : AppCompatActivity()
 
     private fun registerObservers() {
         Log.d(TAG, "registerObservers()")
-        registerListObserver()
+        registerPokemonSearchObserver()
         registerPreviousNavigationButtonEnabledObserver()
         registerNextNavigationButtonEnabledObserver()
         registerPokemonCountObserver()
     }
 
-    private fun registerListObserver() {
-        Log.d(TAG, "registerListObserver()")
+    private fun registerPokemonSearchObserver() {
+        Log.d(TAG, "registerPokemonSearchObserver()")
         vm.pokemonSearch.observe(this, {
-            Log.d(TAG, "registerObservers().onObserve() list: $it")
+            Log.d(TAG, "registerPokemonSearchObserver().onObserve() value: $it")
             when(it) {
-                null -> clearList()
-                else -> updateList(it.results)
+                null -> clearPokemonSearch()
+                else -> updatePokemonSearch(it.results)
             }
         })
     }
 
-    private fun clearList() {
-        Log.d(TAG, "clearList()")
-        listAdapter.clearData()
+    private fun clearPokemonSearch() {
+        Log.d(TAG, "clearPokemonSearch()")
+        pokemonListAdapter.clearData()
     }
 
-    private fun updateList(list : List<Pokemon>) {
-        Log.d(TAG, "updateList() list.size: ${list.size}")
-        listAdapter.setData(list)
+    private fun updatePokemonSearch(value : List<Pokemon>) {
+        Log.d(TAG, "updatePokemonSearch() value.size: ${value.size}")
+        pokemonListAdapter.setData(value)
     }
 
     private fun registerPreviousNavigationButtonEnabledObserver() {
@@ -271,14 +297,14 @@ class MainActivity : AppCompatActivity()
 
     private fun unregisterObservers() {
         Log.d(TAG, "unregisterObservers()")
-        unregisterListObserver()
+        unregisterPokemonSearchObserver()
         unregisterPreviousNavigationButtonEnabledObserver()
         unregisterNextNavigationButtonEnabledObserver()
         unregisterPokemonsCountObserver()
     }
 
-    private fun unregisterListObserver() {
-        Log.d(TAG, "unregisterListObserver()")
+    private fun unregisterPokemonSearchObserver() {
+        Log.d(TAG, "unregisterPokemonSearchObserver()")
         vm.pokemonSearch.removeObservers(this)
     }
 

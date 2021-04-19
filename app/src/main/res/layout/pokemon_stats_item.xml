@@ -28,13 +28,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
             android:contentDescription="@string/pokemon_stat_icon_description"
-            android:padding="12dp"
+            android:padding="15dp"
+            android:src="@drawable/ic_heart"
+            android:tint="@color/white"
+            app:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white"
-            tools:srcCompat="@drawable/ic_heart" />
+            tools:srcCompat="@drawable/ic_heart"
+            tools:ignore="UseAppTint" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
@@ -66,5 +69,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="111" />
+        tools:text="50" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,10 @@
 package com.example.pokedex.ui.main
 
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.R
@@ -14,6 +16,7 @@ import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.parsers.IUrlParserApi
 import com.example.pokedex.domain.web.IWebApi
+import com.example.pokedex.ui.details.DetailsActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     @ApplicationContext context: Context,
+    private val state : SavedStateHandle,
     private val eventApi: IEventApi,
     private val webApi: IWebApi,
     private val urlParserApi: IUrlParserApi
@@ -34,10 +38,13 @@ class MainViewModel @Inject constructor(
 {
     companion object {
         private val TAG = MainViewModel::class.java.simpleName
+
+        const val KEY_SEARCH_TEXT = "searchText"
+        const val KEY_POKEMON_SEARCH = "pokemonSearch"
     }
 
-    val pokemonSearch: MutableLiveData<PokemonSearch> by lazy {
-        MutableLiveData<PokemonSearch>(null)
+    val pokemonSearch: MutableLiveData<PokemonSearch?> by lazy {
+        MutableLiveData()
     }
     val isPreviousNavigationButtonEnabled: MutableLiveData<Boolean> by lazy {
         MutableLiveData(false)
@@ -49,7 +56,7 @@ class MainViewModel @Inject constructor(
         MutableLiveData(0)
     }
 
-    private var searchValue: String? = null
+    private var searchText: String? = null
     private var pageLimit = context.resources.getInteger(R.integer.api_default_limit)
 
     private val alertMessageInputInvalid : String by lazy {
@@ -63,6 +70,16 @@ class MainViewModel @Inject constructor(
     }
     private val alertMessageNetwork : String by lazy {
         context.getString(R.string.alert_generic_network)
+    }
+
+    init {
+        setPokemonSearch(state.get<PokemonSearch?>(KEY_POKEMON_SEARCH))
+        // TODO: implementar...
+    }
+
+    fun onSaveInstanceState() {
+        Log.d(TAG, "onSaveInstanceState()")
+        // TODO: implementar...
     }
 
     fun onPrevious() {
@@ -85,14 +102,14 @@ class MainViewModel @Inject constructor(
         doCollectionSearch(searchUrl)
     }
 
-    fun onPokemonDetail() {
-        Log.d(TAG, "onPokemonDetail()")
-        // TODO: ir à lista e passar para o controller o value de 'Pokemon' atraves de publish, para ele poder navegar
+    fun onPokemonDetail(pokemon: Pokemon) {
+        Log.d(TAG, "onPokemonDetail() pokemon: $pokemon")
+        sendEventNavigateToDetails(pokemon)
     }
 
     fun onSearch() {
-        Log.d(TAG, "onSearch() searchValue: $searchValue")
-        val value = searchValue ?: ""
+        Log.d(TAG, "onSearch() searchValue: $searchText")
+        val value = searchText ?: ""
         when (value.isEmpty()) {
             true -> onEmptySearch()
             false -> onValueSearch(value)
@@ -102,6 +119,8 @@ class MainViewModel @Inject constructor(
     fun onNewLimit(newLimit : Int) {
         Log.d(TAG, "onNewLimit() newLimit: $newLimit")
         pageLimit = newLimit
+
+        // to update search only if there has been a prior search
         if (pokemonSearch.value != null) {
             onSearch()
         }
@@ -109,7 +128,15 @@ class MainViewModel @Inject constructor(
 
     fun setSearchValue(newValue : String) {
         Log.d(TAG, "setSearchValue() newValue: $newValue")
-        searchValue = newValue.toLowerCase(Locale.ROOT)
+        searchText = newValue.trim().toLowerCase(Locale.ROOT)
+    }
+
+    private fun savePokemonSearchState(value : PokemonSearch?) {
+        state.set(KEY_POKEMON_SEARCH, value)
+    }
+
+    private fun saveSearchTextState(value : String?) {
+        state.set(KEY_SEARCH_TEXT, value)
     }
 
     private fun onValueSearch(value: String) = viewModelScope.launch {
@@ -129,6 +156,7 @@ class MainViewModel @Inject constructor(
             setPokemonsCount(searchResults.count)
             setPokemonSearch(searchResults)
         } catch (e: Exception) {
+            e.printStackTrace()
             handleExceptions(e)
         }
         finally {
@@ -146,7 +174,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun clearResults() = viewModelScope.launch {
-        Log.d(TAG, "clearPokemonList()")
+        Log.d(TAG, "clearResults()")
         setPokemonSearch(null)
         setPokemonsCount(0)
         setIsPreviousNavigationButtonsEnabled(false)
@@ -162,6 +190,7 @@ class MainViewModel @Inject constructor(
         Log.d(TAG, "doCollectionSearch()")
         sendEventShowLoading()
         try {
+            clearResults()
             val searchResults = if (searchUrl != null) getPokemonsByUrl(searchUrl) else getPokemons()
             Log.d(TAG, "doCollectionSearch() searchResults: $searchResults")
             getPokemonDetailsForResults(searchResults)
@@ -170,6 +199,7 @@ class MainViewModel @Inject constructor(
             setPokemonsCount(searchResults.count)
             setPokemonSearch(searchResults)
         } catch (e: Exception) {
+            e.printStackTrace()
             handleExceptions(e)
         }
         finally {
@@ -191,6 +221,7 @@ class MainViewModel @Inject constructor(
             Log.d(TAG, "getPokemonDetailsForResults() pokemonDetails: $pokemonDetails")
             it.id = urlParserApi.getLastPath(it.url)
             it.sprites = pokemonDetails.sprites
+            it.stats = pokemonDetails.stats
         }
     }
 
@@ -298,6 +329,18 @@ class MainViewModel @Inject constructor(
     private fun sendEventHideLoading() {
         Log.d(TAG, "sendEventHideLoading()")
         val event = BaseEvent(EventTypes.HideLoading)
+        eventApi.publish(event)
+    }
+
+    private fun sendEventNavigateToDetails(pokemon: Pokemon) {
+        Log.d(TAG, "sendEventNavigateToDetails()")
+        val event = BaseEvent(
+            EventTypes.NavigateTo,
+            mapOf(
+                EventTypesMapper.NAVIGATION_TO to DetailsActivity::class.java,
+                EventTypesMapper.NAVIGATION_DATA to pokemon
+            )
+        )
         eventApi.publish(event)
     }
 }
