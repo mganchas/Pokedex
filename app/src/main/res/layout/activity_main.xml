@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                app:backColor="secondary"
+                app:backColor="white"
                 app:image="@drawable/ic_search"
                 app:imageTint="@color/red_light"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -135,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:stateListAnimator="@null"
-                app:backColor="secondary"
+                app:backColor="white"
                 app:image="@drawable/ic_arrow_left"
                 app:imageTint="@color/red_dark"
                 app:size="medium" />
@@ -151,7 +151,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:stateListAnimator="@null"
-                app:backColor="secondary"
+                app:backColor="white"
                 app:image="@drawable/ic_arrow_right"
                 app:imageTint="@color/red_dark"
                 app:size="medium" />

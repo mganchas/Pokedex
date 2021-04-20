@@ -15,7 +15,6 @@ import com.example.pokedex.domain.alerts.IAlertApi
 import com.example.pokedex.domain.animation.IAnimationApi
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.image.IImageApi
-import com.example.pokedex.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
 import javax.inject.Inject
@@ -45,7 +44,6 @@ class DetailsActivity : AppCompatActivity()
 
     private val eventsMapper : Map<EventTypes, (Map<String, Any>?) -> Unit> by lazy {
         mapOf(
-            EventTypes.FavouritePokemon to ::onFavouritePokemon,
             EventTypes.ErrorNetwork to ::onAlertMessage
         )
     }
@@ -137,8 +135,9 @@ class DetailsActivity : AppCompatActivity()
 
     private fun setFavouriteButton() {
         Log.d(TAG, "setFavouriteButton()")
-        binding.favouriteButton.setOnClickListener {
+        binding.favouriteContainer.setOnClickListener {
             Log.d(TAG, "setFavouriteButton().onClick()")
+            binding.animation.playAnimation()
             vm.setAsFavourite()
         }
     }
@@ -219,12 +218,6 @@ class DetailsActivity : AppCompatActivity()
     private fun unregisterPokemonObserver() {
         Log.d(TAG, "unregisterPokemonNameObserver()")
         vm.pokemon.removeObservers(this)
-    }
-
-    private fun onFavouritePokemon(payload: Map<String, Any>?) {
-        Log.d(TAG, "onFavouritePokemon() payload: $payload")
-
-        // TODO: implementar animação
     }
 
     /*

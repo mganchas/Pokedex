@@ -5,8 +5,8 @@
         <attr name="imageTint" format="color" />
 
         <attr name="backColor" format="enum">
-            <enum name="primary" value="0"/>
-            <enum name="secondary" value="1"/>
+            <enum name="white" value="0"/>
+            <enum name="red" value="1"/>
             <enum name="disabled" value="2"/>
         </attr>
 

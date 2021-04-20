@@ -21,9 +21,10 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
         const val SIZE_LEVEL_MEDIUM = 2
         const val SIZE_LEVEL_BIG = 3
 
-        const val BACKCOLOR_LEVEL_PRIMARY = 0
-        const val BACKCOLOR_LEVEL_SECONDARY = 1
+        const val BACKCOLOR_LEVEL_WHITE = 0
+        const val BACKCOLOR_LEVEL_RED = 1
         const val BACKCOLOR_LEVEL_DISABLED = 2
+        const val DEFAULT_BACKCOLOR_LEVEL = BACKCOLOR_LEVEL_WHITE
     }
 
     var image: Drawable?
@@ -33,13 +34,13 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
         private set
 
 
-    var backColorLevel : Int = BACKCOLOR_LEVEL_PRIMARY
+    var backColorLevel : Int = DEFAULT_BACKCOLOR_LEVEL
         private set
 
     var buttonSizeLevel : Int = SIZE_LEVEL_MEDIUM
         private set
 
-    private var initialBackColorLevel : Int = BACKCOLOR_LEVEL_PRIMARY
+    private var initialBackColorLevel : Int = DEFAULT_BACKCOLOR_LEVEL
 
     private var binding : ButtonCircleBinding
 
@@ -51,7 +52,7 @@ class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(cont
             0
         ).apply {
             try {
-                backColorLevel = getInteger(R.styleable.ButtonCircle_backColor, BACKCOLOR_LEVEL_PRIMARY)
+                backColorLevel = getInteger(R.styleable.ButtonCircle_backColor, DEFAULT_BACKCOLOR_LEVEL)
                 image = getDrawable(R.styleable.ButtonCircle_image)
                 imageTint = getResourceId(R.styleable.ButtonCircle_imageTint, ContextCompat.getColor(context, (R.color.white)))
                 buttonSizeLevel = getInteger(R.styleable.ButtonCircle_size, SIZE_LEVEL_MEDIUM)

@@ -6,7 +6,6 @@ enum class EventTypes {
     NavigateTo,
     InvalidInput,
     PokemonNotFound,
-    FavouritePokemon,
     ErrorGeneric,
     ErrorNetwork
 }

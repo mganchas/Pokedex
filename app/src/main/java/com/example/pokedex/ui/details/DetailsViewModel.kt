@@ -75,7 +75,6 @@ class DetailsViewModel @Inject constructor(
 
         try {
             webApi.getPokemonService().setAsFavourite(id, currentPokemon)
-            sendEventFavourite()
         } catch (e: Exception) {
             e.printStackTrace()
             handleExceptions(e)
@@ -144,12 +143,6 @@ class DetailsViewModel @Inject constructor(
             EventTypes.ErrorNetwork,
             mapOf(EventTypesMapper.MESSAGE to alertMessageNetwork)
         )
-        eventApi.publish(event)
-    }
-
-    private fun sendEventFavourite() {
-        Log.d(TAG, "sendEventFavourite()")
-        val event = BaseEvent(EventTypes.FavouritePokemon)
         eventApi.publish(event)
     }
 }

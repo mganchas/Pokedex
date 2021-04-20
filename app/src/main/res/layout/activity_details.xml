@@ -123,21 +123,31 @@
                 android:text="@string/label_favourite_pokemon"
                 android:textColor="@color/gray_dark"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/favouriteButton"
+                app:layout_constraintEnd_toStartOf="@id/animationContainer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.example.pokedex.ui.components.ButtonCircle
-                android:id="@+id/favouriteButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:backColor="secondary"
-                app:image="@drawable/ic_star"
-                app:imageTint="@color/gold"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/animationContainer"
+                android:layout_width="@dimen/outer_medium_size"
+                android:layout_height="@dimen/outer_medium_size"
+                android:background="@drawable/button_circle_background"
+                android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:size="medium" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/animation"
+                    android:layout_width="@dimen/inner_big_size"
+                    android:layout_height="@dimen/inner_big_size"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:lottie_autoPlay="false"
+                    app:lottie_fileName="favourite_animation.json"
+                    app:lottie_loop="false" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
