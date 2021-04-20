@@ -8,16 +8,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.R
 import com.example.pokedex.data.events.BaseEvent
+import com.example.pokedex.data.extensions.toPokemonDetails
+import com.example.pokedex.data.extensions.toPokemonDetailsStats
 import com.example.pokedex.data.mappers.EventTypesMapper
 import com.example.pokedex.data.models.Pokemon
+import com.example.pokedex.data.models.PokemonDetails
 import com.example.pokedex.data.models.PokemonSearch
+import com.example.pokedex.data.persistence.ObjectBox
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.parsers.IUrlParserApi
-import com.example.pokedex.domain.web.IWebApi
+import com.example.pokedex.domain.persistence.IPersistenceApi
+import com.example.pokedex.domain.repository.IRepositoryApi
+import com.example.pokedex.domain.scope.ScopeApi
 import com.example.pokedex.ui.details.DetailsActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.objectbox.kotlin.boxFor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,8 +37,9 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val eventApi: IEventApi,
-    private val webApi: IWebApi,
-    private val urlParserApi: IUrlParserApi
+    private val repositoryApi: IRepositoryApi,
+    private val urlParserApi: IUrlParserApi,
+    private val persistenceApi: IPersistenceApi
 ) : ViewModel()
 {
     companion object {
@@ -39,9 +47,10 @@ class MainViewModel @Inject constructor(
 
         const val KEY_SEARCH_TEXT = "searchText"
         const val KEY_POKEMON_SEARCH = "pokemonSearch"
+        const val KEY_POKEMON_DETAILS_LIST = "pokemonDetailsList"
     }
 
-    val pokemonSearch: MutableLiveData<PokemonSearch?> by lazy {
+    val pokemonDetailsList: MutableLiveData<List<PokemonDetails>?> by lazy {
         MutableLiveData()
     }
     val isPreviousNavigationButtonEnabled: MutableLiveData<Boolean> by lazy {
@@ -54,6 +63,7 @@ class MainViewModel @Inject constructor(
         MutableLiveData(0)
     }
 
+    private var pokemonSearch: PokemonSearch? = null
     private var searchText: String? = null
     private var pageLimit = context.resources.getInteger(R.integer.api_default_limit)
 
@@ -72,19 +82,21 @@ class MainViewModel @Inject constructor(
 
     fun onSaveInstanceState(bundle: Bundle) {
         Log.d(TAG, "onSaveInstanceState()")
+        savePokemonDetailsListState(bundle)
         savePokemonSearchState(bundle)
         saveSearchTextState(bundle)
     }
 
     fun onRestoreInstanceState(bundle: Bundle) {
         Log.d(TAG, "onRestoreInstanceState()")
+        getPokemonDetailsListState(bundle)
         getPokemonSearchState(bundle)
         getSearchTextState(bundle)
     }
 
     fun onPrevious() {
         Log.d(TAG, "onPrevious()")
-        val searchUrl = pokemonSearch.value?.previous ?: ""
+        val searchUrl = pokemonSearch?.previous ?: ""
         Log.d(TAG, "onPrevious() searchUrl: $searchUrl")
         if (searchUrl.isEmpty()) {
             throw NullPointerException("no previous url to navigate")
@@ -94,7 +106,7 @@ class MainViewModel @Inject constructor(
 
     fun onNext() {
         Log.d(TAG, "onNext()")
-        val searchUrl = pokemonSearch.value?.next ?: ""
+        val searchUrl = pokemonSearch?.next ?: ""
         Log.d(TAG, "onNext() searchUrl: $searchUrl")
         if (searchUrl.isEmpty()) {
             throw NullPointerException("no next url to navigate")
@@ -102,16 +114,16 @@ class MainViewModel @Inject constructor(
         onCollectionSearch(searchUrl)
     }
 
-    fun onPokemonDetail(pokemon: Pokemon) {
-        Log.d(TAG, "onPokemonDetail() pokemon: $pokemon")
-        sendEventNavigateToDetails(pokemon)
+    fun onPokemonDetail(pokemonDetails: PokemonDetails) {
+        Log.d(TAG, "onPokemonDetail() pokemonDetails: $pokemonDetails")
+        sendEventNavigateToDetails(pokemonDetails.pokemonId)
     }
 
     fun onSearch() {
         Log.d(TAG, "onSearch() searchValue: $searchText")
         val value = searchText ?: ""
         when (value.isEmpty()) {
-            true -> onEmptySearch()
+            true -> onCollectionSearch(null)
             false -> onSingleSearch(value)
         }
     }
@@ -121,7 +133,7 @@ class MainViewModel @Inject constructor(
         pageLimit = newLimit
 
         // to update search only if there has been a prior search
-        if (pokemonSearch.value != null) {
+        if (pokemonSearch != null) {
             onSearch()
         }
     }
@@ -131,14 +143,26 @@ class MainViewModel @Inject constructor(
         searchText = newValue.trim().toLowerCase(Locale.ROOT)
     }
 
+    private fun savePokemonDetailsListState(bundle: Bundle) {
+        Log.d(TAG, "savePokemonDetailsListState()")
+        bundle.putSerializable(KEY_POKEMON_DETAILS_LIST, pokemonSearch)
+    }
+
     private fun savePokemonSearchState(bundle: Bundle) {
         Log.d(TAG, "savePokemonSearchState()")
-        bundle.putSerializable(KEY_POKEMON_SEARCH, pokemonSearch.value)
+        bundle.putSerializable(KEY_POKEMON_SEARCH, pokemonSearch)
     }
 
     private fun saveSearchTextState(bundle: Bundle) {
         Log.d(TAG, "saveSearchTextState()")
         bundle.putString(KEY_SEARCH_TEXT, searchText)
+    }
+
+    private fun getPokemonDetailsListState(bundle: Bundle) {
+        Log.d(TAG, "getPokemonDetailsListState()")
+        bundle.getSerializable(KEY_POKEMON_DETAILS_LIST)?.let {
+            setPokemonDetailsList(it as List<PokemonDetails>?)
+        }
     }
 
     private fun getPokemonSearchState(bundle: Bundle) {
@@ -171,9 +195,16 @@ class MainViewModel @Inject constructor(
             )
             setPokemonsCount(searchResults.count)
             setPokemonSearch(searchResults)
+
+            val pokemonDetailsList = mutableListOf<PokemonDetails>()
+            val pokemonDetails = pokemon.toPokemonDetails()
+            pokemonDetailsList.add(pokemonDetails)
+            addToLocalDatabase(pokemonDetails)
+            setPokemonDetailsList(pokemonDetailsList)
         } catch (e: Exception) {
             e.printStackTrace()
-            handleExceptions(e)
+            throw e
+            //handleExceptions(e)
         }
         finally {
             sendEventHideLoading()
@@ -183,21 +214,17 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemonByValue(value: String) : Pokemon {
         Log.d(TAG, "getPokemonByValue() value: $value")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonByValue(value)
+            repositoryApi.getPokemonService().getPokemonByValue(value)
         }
     }
 
     private fun clearResults() = viewModelScope.launch {
         Log.d(TAG, "clearResults()")
-        setPokemonSearch(null)
+        setPokemonDetailsList(null)
         setPokemonsCount(0)
+        setPokemonSearch(null)
         setIsPreviousNavigationButtonsEnabled(false)
         setIsNextNavigationButtonsEnabled(false)
-    }
-
-    private fun onEmptySearch() {
-        Log.d(TAG, "onEmptySearch()")
-        onCollectionSearch(null)
     }
 
     private fun onCollectionSearch(searchUrl: String?) = viewModelScope.launch {
@@ -207,14 +234,22 @@ class MainViewModel @Inject constructor(
             clearResults()
             val searchResults = if (searchUrl != null) getPokemonsByUrl(searchUrl) else getPokemons()
             Log.d(TAG, "doCollectionSearch() searchResults: $searchResults")
-            getPokemonDetailsForResults(searchResults)
             setIsPreviousNavigationButtonsEnabled(searchResults.previous != null)
             setIsNextNavigationButtonsEnabled(searchResults.next != null)
             setPokemonsCount(searchResults.count)
             setPokemonSearch(searchResults)
+
+            val pokemonDetailsList = mutableListOf<PokemonDetails>()
+            searchResults.results.forEach {
+                val pokemonDetails = getPokemonDetailsForResults(it)
+                pokemonDetailsList.add(pokemonDetails)
+                addToLocalDatabase(pokemonDetails)
+            }
+            setPokemonDetailsList(pokemonDetailsList)
         } catch (e: Exception) {
             e.printStackTrace()
-            handleExceptions(e)
+            throw e
+            //handleExceptions(e)
         }
         finally {
             sendEventHideLoading()
@@ -224,33 +259,46 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemons() : PokemonSearch {
         Log.d(TAG, "getPokemons()")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonsWithLimit(pageLimit)
-        }
-    }
-
-    private suspend fun getPokemonDetailsForResults(searchResults: PokemonSearch) {
-        Log.d(TAG, "getPokemonDetailsForResults()")
-        searchResults.results.forEach {
-            val pokemonDetails = getPokemonDetailsByUrl(it.url)
-            Log.d(TAG, "getPokemonDetailsForResults() pokemonDetails: $pokemonDetails")
-            it.id = urlParserApi.getLastPath(it.url)
-            it.sprites = pokemonDetails.sprites
-            it.stats = pokemonDetails.stats
+            repositoryApi.getPokemonService().getPokemonsWithLimit(pageLimit)
         }
     }
 
     private suspend fun getPokemonsByUrl(url: String) : PokemonSearch {
         Log.d(TAG, "getPokemonsByUrl()")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonsByUrl(url)
+            repositoryApi.getPokemonService().getPokemonsByUrl(url)
         }
     }
 
-    private suspend fun getPokemonDetailsByUrl(url: String) : Pokemon {
-        Log.d(TAG, "getPokemonByUrl()")
-        return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonByUrl(url)
+    private suspend fun getPokemonDetailsForResults(pokemon: Pokemon) : PokemonDetails {
+        Log.d(TAG, "getPokemonDetailsForResults()")
+        return when (val persistedPokemonDetails = getPokemonDetailsByName(pokemon.name)) {
+            null -> {
+                getPokemonByUrl(pokemon.url).also {
+                    it.url = pokemon.url
+                }.toPokemonDetails()
+            }
+            else -> persistedPokemonDetails
         }
+    }
+
+    private suspend fun getPokemonDetailsByName(name: String) : PokemonDetails? {
+        Log.d(TAG, "getPokemonDetailsByName() name: $name")
+        return withContext(Dispatchers.IO) {
+            persistenceApi.findByName(name)
+        }
+    }
+
+    private suspend fun getPokemonByUrl(url: String) : Pokemon {
+        Log.d(TAG, "getPokemonByUrl() url: $url")
+        return withContext(Dispatchers.IO) {
+            repositoryApi.getPokemonService().getPokemonByUrl(url)
+        }
+    }
+
+    private fun addToLocalDatabase(pokemonDetails: PokemonDetails) = ScopeApi.io().launch {
+        Log.d(TAG, "addToLocalDatabase() pokemonDetails: $pokemonDetails")
+        persistenceApi.add(pokemonDetails)
     }
 
     private fun handleExceptions(e: Exception) {
@@ -288,9 +336,14 @@ class MainViewModel @Inject constructor(
         pokemonsCount.value = value
     }
 
-    private fun setPokemonSearch(value: PokemonSearch?)  {
+    private fun setPokemonDetailsList(value: List<PokemonDetails>?)  {
+        Log.d(TAG, "setPokemonDetailsList() value: $value")
+        pokemonDetailsList.value = value
+    }
+
+    private fun setPokemonSearch(value: PokemonSearch?) {
         Log.d(TAG, "setPokemonSearch() value: $value")
-        pokemonSearch.value = value
+        pokemonSearch = value
     }
 
     /*
@@ -346,13 +399,13 @@ class MainViewModel @Inject constructor(
         eventApi.publish(event)
     }
 
-    private fun sendEventNavigateToDetails(pokemon: Pokemon) {
+    private fun sendEventNavigateToDetails(pokemonId: String) {
         Log.d(TAG, "sendEventNavigateToDetails()")
         val event = BaseEvent(
             EventTypes.NavigateTo,
             mapOf(
                 EventTypesMapper.NAVIGATION_TO to DetailsActivity::class.java,
-                EventTypesMapper.NAVIGATION_DATA to pokemon
+                EventTypesMapper.NAVIGATION_DATA to pokemonId
             )
         )
         eventApi.publish(event)

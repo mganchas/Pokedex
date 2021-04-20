@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokedex.R
 import com.example.pokedex.data.events.BaseEvent
 import com.example.pokedex.data.mappers.EventTypesMapper
-import com.example.pokedex.data.models.Pokemon
+import com.example.pokedex.data.models.PokemonDetails
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.databinding.ActivityMainBinding
 import com.example.pokedex.domain.alerts.IAlertApi
@@ -257,19 +257,19 @@ class MainActivity : AppCompatActivity()
 
     private fun registerObservers() {
         Log.d(TAG, "registerObservers()")
-        registerPokemonSearchObserver()
+        registerPokemonDetailsListObserver()
         registerPreviousNavigationButtonEnabledObserver()
         registerNextNavigationButtonEnabledObserver()
         registerPokemonCountObserver()
     }
 
-    private fun registerPokemonSearchObserver() {
-        Log.d(TAG, "registerPokemonSearchObserver()")
-        vm.pokemonSearch.observe(this, {
-            Log.d(TAG, "registerPokemonSearchObserver().onObserve() value: $it")
+    private fun registerPokemonDetailsListObserver() {
+        Log.d(TAG, "registerPokemonDetailsListObserver()")
+        vm.pokemonDetailsList.observe(this, {
+            Log.d(TAG, "registerPokemonDetailsListObserver().onObserve() value: $it")
             when(it) {
                 null -> clearPokemonSearch()
-                else -> updatePokemonSearch(it.results)
+                else -> updatePokemonSearch(it)
             }
         })
     }
@@ -279,7 +279,7 @@ class MainActivity : AppCompatActivity()
         pokemonListAdapter.clearData()
     }
 
-    private fun updatePokemonSearch(value : List<Pokemon>) {
+    private fun updatePokemonSearch(value : List<PokemonDetails>) {
         Log.d(TAG, "updatePokemonSearch() value.size: ${value.size}")
         pokemonListAdapter.setData(value)
     }
@@ -318,15 +318,15 @@ class MainActivity : AppCompatActivity()
 
     private fun unregisterObservers() {
         Log.d(TAG, "unregisterObservers()")
-        unregisterPokemonSearchObserver()
+        unregisterPokemonDetailsListObserver()
         unregisterPreviousNavigationButtonEnabledObserver()
         unregisterNextNavigationButtonEnabledObserver()
         unregisterPokemonsCountObserver()
     }
 
-    private fun unregisterPokemonSearchObserver() {
-        Log.d(TAG, "unregisterPokemonSearchObserver()")
-        vm.pokemonSearch.removeObservers(this)
+    private fun unregisterPokemonDetailsListObserver() {
+        Log.d(TAG, "unregisterPokemonDetailsListObserver()")
+        vm.pokemonDetailsList.removeObservers(this)
     }
 
     private fun unregisterPreviousNavigationButtonEnabledObserver() {

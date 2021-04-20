@@ -9,17 +9,20 @@ import com.example.pokedex.R
 import com.example.pokedex.data.events.BaseEvent
 import com.example.pokedex.data.managers.PokemonStatsManager
 import com.example.pokedex.data.mappers.EventTypesMapper
-import com.example.pokedex.data.models.Pokemon
 import com.example.pokedex.data.models.stats.PokemonStatPair
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.scope.ScopeApi
-import com.example.pokedex.domain.web.IWebApi
+import com.example.pokedex.domain.repository.IRepositoryApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import com.example.pokedex.data.extensions.toLinkedList
+import com.example.pokedex.data.models.PokemonDetails
+import com.example.pokedex.domain.persistence.IPersistenceApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
@@ -27,14 +30,15 @@ import javax.inject.Inject
 class DetailsViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val eventApi: IEventApi,
-    private val webApi: IWebApi
+    private val repositoryApi: IRepositoryApi,
+    private val persistenceApi: IPersistenceApi
 ) : ViewModel()
 {
     companion object {
         private val TAG = DetailsViewModel::class.java.simpleName
     }
 
-    val pokemon : MutableLiveData<Pokemon> by lazy {
+    val pokemonDetails : MutableLiveData<PokemonDetails> by lazy {
         MutableLiveData()
     }
     val stats : MutableLiveData<List<PokemonStatPair>?> by lazy {
@@ -51,16 +55,20 @@ class DetailsViewModel @Inject constructor(
         context.getString(R.string.alert_generic_network)
     }
 
-    fun initWithPokemon(pokemon: Pokemon) {
-        Log.d(TAG, "initWithPokemon() pokemon: $pokemon")
+    fun initWithPokemonId(pokemonId: String) = viewModelScope.launch {
+        Log.d(TAG, "initWithPokemon() pokemonId: $pokemonId")
 
-        val pokemonStats = getStats(pokemon)
+        val pokemonDetails = withContext(Dispatchers.IO) {
+            persistenceApi.findById(pokemonId)
+        } ?: throw NullPointerException("pokemonDetails not stored locally")
+
+        val pokemonStats = getStats(pokemonDetails)
         setStats(pokemonStats)
 
-        val pokemonSprites = getSprites(pokemon)
+        val pokemonSprites = getSprites(pokemonDetails)
         setSprites(pokemonSprites)
 
-        setPokemon(pokemon)
+        setPokemon(pokemonDetails)
     }
 
     /*
@@ -68,24 +76,21 @@ class DetailsViewModel @Inject constructor(
         in the background and not leave the client hanging for its completion
     */
     fun setAsFavourite() = ScopeApi.io().launch {
-        Log.d(TAG, "setAsFavourite() pokemon: $pokemon")
-        val currentPokemon = pokemon.value ?: throw NullPointerException("pokemon cannot be null")
-        val id = currentPokemon.id ?: throw NullPointerException("id cannot be null")
-
+        Log.d(TAG, "setAsFavourite() pokemon: $pokemonDetails")
+        val currentPokemon = pokemonDetails.value ?: throw NullPointerException("pokemon cannot be null")
         try {
-            webApi.getPokemonService().setAsFavourite(id, currentPokemon)
+            repositoryApi.getPokemonService().setAsFavourite(currentPokemon.pokemonId, currentPokemon)
         } catch (e: Exception) {
             e.printStackTrace()
             handleExceptions(e)
         }
     }
 
-    private fun getStats(pokemon: Pokemon) : List<PokemonStatPair> {
-        Log.d(TAG, "getStats() pokemon: $pokemon")
-        val pokemonRawStats = pokemon.stats ?: throw NullPointerException("null stats are not allowed")
+    private fun getStats(pokemonDetails: PokemonDetails) : List<PokemonStatPair> {
+        Log.d(TAG, "getStats() pokemon: $pokemonDetails")
         val pokemonStats = mutableListOf<PokemonStatPair>()
-        pokemonRawStats.forEach {
-            val statType = PokemonStatsManager.getStatTypeByRawValue(it.statNameAndUrl.name)
+        pokemonDetails.stats.forEach {
+            val statType = PokemonStatsManager.getStatTypeByRawValue(it.statNameAndUrl.target.name)
             val statDetails = PokemonStatsManager.getStatDetailsByType(statType)
             val statDetailsPair = PokemonStatPair(statDetails, it.value)
             Log.d(TAG, "initWithPokemon() statType: $statType | statDetails: $statDetails | statDetailsPair: $statDetailsPair")
@@ -94,10 +99,9 @@ class DetailsViewModel @Inject constructor(
         return pokemonStats
     }
 
-    private fun getSprites(pokemon: Pokemon) : List<String> {
-        Log.d(TAG, "getSprites() pokemon: $pokemon")
-        val sprites = pokemon.sprites ?: throw NullPointerException("null sprites are not allowed")
-        return sprites.toLinkedList()
+    private fun getSprites(pokemonDetails: PokemonDetails) : List<String> {
+        Log.d(TAG, "getSprites() pokemonDetails: $pokemonDetails")
+        return pokemonDetails.sprites.target.toLinkedList()
     }
 
     private fun handleExceptions(e: Exception) {
@@ -112,9 +116,9 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun setPokemon(value: Pokemon?) = viewModelScope.launch {
+    private fun setPokemon(value: PokemonDetails?) = viewModelScope.launch {
         Log.d(TAG, "setPokemon() value: $value")
-        pokemon.value = value
+        pokemonDetails.value = value
     }
 
     private fun setStats(value : List<PokemonStatPair>?) = viewModelScope.launch {

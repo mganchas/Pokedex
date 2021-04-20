@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pokedex.data.models.Pokemon
+import com.example.pokedex.data.models.PokemonDetails
 import com.example.pokedex.databinding.PokemonSearchItemBinding
 import com.example.pokedex.domain.image.IImageApi
 import com.example.pokedex.domain.scope.ScopeApi
@@ -13,20 +13,20 @@ import kotlinx.coroutines.launch
 class PokemonListAdapter(
     context: Context,
     private val imageApi : IImageApi,
-    private val onItemClick: (Pokemon) -> Unit
+    private val onItemClick: (PokemonDetails) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private var pokemons = mutableListOf<Pokemon>()
+    private var pokemons = mutableListOf<PokemonDetails>()
 
     inner class PokemonViewHolder(private val binding : PokemonSearchItemBinding) : RecyclerView.ViewHolder(binding.root)
     {
-        fun bind(pokemon: Pokemon)
+        fun bind(pokemon: PokemonDetails)
         {
             binding.apply {
-                pokemonId.text = pokemon.id.toString()
+                pokemonId.text = pokemon.pokemonId.toString()
                 pokemonName.text = pokemon.name
-                pokemon.sprites?.frontShiny?.let {
+                pokemon.sprites.target.frontShiny?.let {
                     imageApi.loadImageFromUrlIntoView(it, pokemonImage)
                 }
                 parentLayout.setOnClickListener {
@@ -53,7 +53,7 @@ class PokemonListAdapter(
         updateView()
     }
 
-    fun setData(pokemonList: List<Pokemon>) {
+    fun setData(pokemonList: List<PokemonDetails>) {
         // to prevent racing conditions
         synchronized(this) {
             clearData()

@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokedex.data.events.BaseEvent
 import com.example.pokedex.data.mappers.EventTypesMapper
-import com.example.pokedex.data.models.Pokemon
 import com.example.pokedex.data.models.stats.PokemonStatPair
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.databinding.ActivityDetailsBinding
@@ -55,12 +54,12 @@ class DetailsActivity : AppCompatActivity()
         val view = binding.root
         setContentView(view)
 
-        val pokemon = getIncomingPokemon() ?: throw NullPointerException("pokemon missing")
+        val pokemonId = getIncomingPokemonId() ?: throw NullPointerException("pokemon missing")
         setToolbar()
         setSpritesCarousel()
         setRecyclerView { setStatsAdapter() }
         setFavouriteButton()
-        vm.initWithPokemon(pokemon)
+        vm.initWithPokemonId(pokemonId)
     }
 
     override fun onResume() {
@@ -91,9 +90,9 @@ class DetailsActivity : AppCompatActivity()
         }
     }
 
-    private fun getIncomingPokemon() : Pokemon? {
+    private fun getIncomingPokemonId() : String? {
         Log.d(TAG, "getIncomingPokemon()")
-        return intent.getSerializableExtra(EventTypesMapper.NAVIGATION_DATA) as Pokemon?
+        return intent.getStringExtra(EventTypesMapper.NAVIGATION_DATA)
     }
 
     private fun setStatsAdapter() {
@@ -191,7 +190,7 @@ class DetailsActivity : AppCompatActivity()
 
     private fun registerPokemonObserver() {
         Log.d(TAG, "registerPokemonObserver()")
-        vm.pokemon.observe(this, {
+        vm.pokemonDetails.observe(this, {
             Log.d(TAG, "registerPokemonObserver().onObserve() value: $it")
             binding.pokemonName.text = it.name
             binding.toolbar.title = it.name
@@ -217,7 +216,7 @@ class DetailsActivity : AppCompatActivity()
 
     private fun unregisterPokemonObserver() {
         Log.d(TAG, "unregisterPokemonNameObserver()")
-        vm.pokemon.removeObservers(this)
+        vm.pokemonDetails.removeObservers(this)
     }
 
     /*

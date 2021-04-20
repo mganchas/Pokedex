@@ -1,4 +1,4 @@
-package com.example.pokedex.domain.web
+package com.example.pokedex.domain.persistence
 
 import android.content.Context
 import dagger.Module
@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object WebApiModule {
+object PersistenceApiModule {
     @Provides
-    fun provideWebApi(@ApplicationContext appContext: Context) : IWebApi = WebApiRetrofit(appContext)
+    fun providePersistenceApi(@ApplicationContext appContext: Context) : IPersistenceApi = PersistenceApiObjectBox()
 }

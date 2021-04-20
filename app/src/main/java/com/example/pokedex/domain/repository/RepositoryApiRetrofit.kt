@@ -1,4 +1,4 @@
-package com.example.pokedex.domain.web
+package com.example.pokedex.domain.repository
 
 import android.content.Context
 import android.util.Log
@@ -9,12 +9,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
-class WebApiRetrofit @Inject constructor(
+class RepositoryApiRetrofit @Inject constructor(
     @ApplicationContext private val appContext: Context
-) : IWebApi
+) : IRepositoryApi
 {
     companion object {
-        private val TAG = WebApiRetrofit::class.java.simpleName
+        private val TAG = RepositoryApiRetrofit::class.java.simpleName
     }
 
     private val instance by lazy {

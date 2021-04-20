@@ -1,6 +1,7 @@
 package com.example.pokedex.data.repository
 
 import com.example.pokedex.data.models.Pokemon
+import com.example.pokedex.data.models.PokemonDetails
 import com.example.pokedex.data.models.PokemonSearch
 import retrofit2.http.*
 
@@ -28,5 +29,5 @@ interface IPokemonService {
         for the api invoker (in this case IPokemonService)
     */
     @POST("https://webhook.site./c198ff0a-488a-4238-999e-36673d6e9654/{id}")
-    suspend fun setAsFavourite(@Path("id") id : String, @Body pokemon: Pokemon)
+    suspend fun setAsFavourite(@Path("id") id : String, @Body pokemon: PokemonDetails)
 }
