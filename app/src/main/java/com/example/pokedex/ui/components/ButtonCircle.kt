@@ -16,15 +16,15 @@ import com.example.pokedex.databinding.ButtonCircleBinding
 class ButtonCircle(context: Context, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
     companion object
     {
-        const val SIZE_LEVEL_SMALL = 0
-        const val SIZE_LEVEL_SMALLDIUM = 1
-        const val SIZE_LEVEL_MEDIUM = 2
-        const val SIZE_LEVEL_BIG = 3
+        private const val SIZE_LEVEL_SMALL = 0
+        private const val SIZE_LEVEL_SMALLDIUM = 1
+        private const val SIZE_LEVEL_MEDIUM = 2
+        private const val SIZE_LEVEL_BIG = 3
 
-        const val BACKCOLOR_LEVEL_WHITE = 0
-        const val BACKCOLOR_LEVEL_RED = 1
-        const val BACKCOLOR_LEVEL_DISABLED = 2
-        const val DEFAULT_BACKCOLOR_LEVEL = BACKCOLOR_LEVEL_WHITE
+        private const val BACKCOLOR_LEVEL_WHITE = 0
+        private const val BACKCOLOR_LEVEL_RED = 1
+        private const val BACKCOLOR_LEVEL_DISABLED = 2
+        private const val DEFAULT_BACKCOLOR_LEVEL = BACKCOLOR_LEVEL_WHITE
     }
 
     var image: Drawable?

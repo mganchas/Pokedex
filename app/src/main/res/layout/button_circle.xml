@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/button_circle_parent_layout"
     android:layout_width="@dimen/outer_medium_size"
     android:layout_height="@dimen/outer_medium_size"
     android:gravity="center"
+    android:id="@+id/buttonCircleParentLayout"
     android:background="@drawable/button_circle_background">
 
     <ImageView
-        android:id="@+id/button_circle_icon"
+        android:id="@+id/buttonCircleIcon"
         android:layout_width="@dimen/inner_medium_size"
         android:layout_height="@dimen/inner_medium_size"
         android:contentDescription="@string/button_circle_image_description"

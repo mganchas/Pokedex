@@ -1,4 +1,5 @@
-import com.example.pokedex.data.extensions.addIfNotNull
+package com.example.pokedex.data.extensions
+
 import com.example.pokedex.data.models.PokemonSprites
 import java.util.*
 

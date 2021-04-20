@@ -3,7 +3,6 @@
     <dimen name="animation_loading">150dp</dimen>
     <dimen name="default_elevation">6dp</dimen>
     <dimen name="avatarContainer">160dp</dimen>
-    <dimen name="avatar">90dp</dimen>
     <dimen name="outer_big_size">60dp</dimen>
     <dimen name="inner_big_size">30dp</dimen>
     <dimen name="outer_medium_size">50dp</dimen>

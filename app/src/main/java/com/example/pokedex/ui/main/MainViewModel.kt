@@ -89,7 +89,7 @@ class MainViewModel @Inject constructor(
         if (searchUrl.isEmpty()) {
             throw NullPointerException("no previous url to navigate")
         }
-        doCollectionSearch(searchUrl)
+        onCollectionSearch(searchUrl)
     }
 
     fun onNext() {
@@ -99,7 +99,7 @@ class MainViewModel @Inject constructor(
         if (searchUrl.isEmpty()) {
             throw NullPointerException("no next url to navigate")
         }
-        doCollectionSearch(searchUrl)
+        onCollectionSearch(searchUrl)
     }
 
     fun onPokemonDetail(pokemon: Pokemon) {
@@ -112,7 +112,7 @@ class MainViewModel @Inject constructor(
         val value = searchText ?: ""
         when (value.isEmpty()) {
             true -> onEmptySearch()
-            false -> onValueSearch(value)
+            false -> onSingleSearch(value)
         }
     }
 
@@ -155,7 +155,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun onValueSearch(value: String) = viewModelScope.launch {
+    private fun onSingleSearch(value: String) = viewModelScope.launch {
         Log.d(TAG, "onValueSearch() value: $value")
 
         sendEventShowLoading()
@@ -197,10 +197,10 @@ class MainViewModel @Inject constructor(
 
     private fun onEmptySearch() {
         Log.d(TAG, "onEmptySearch()")
-        doCollectionSearch(null)
+        onCollectionSearch(null)
     }
 
-    private fun doCollectionSearch(searchUrl: String?) = viewModelScope.launch {
+    private fun onCollectionSearch(searchUrl: String?) = viewModelScope.launch {
         Log.d(TAG, "doCollectionSearch()")
         sendEventShowLoading()
         try {

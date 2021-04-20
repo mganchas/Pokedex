@@ -28,8 +28,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
-        android:layout_marginVertical="5dp"
         android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="5dp"
         android:textAlignment="textStart"
         android:textColor="@color/black"
         android:textSize="18sp"
@@ -38,7 +38,7 @@
         app:layout_constraintEnd_toStartOf="@id/pokemonId"
         app:layout_constraintStart_toEndOf="@id/pokemonImage"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Pikachu"/>
+        tools:text="Pikachu" />
 
     <TextView
         android:id="@+id/pokemonId"

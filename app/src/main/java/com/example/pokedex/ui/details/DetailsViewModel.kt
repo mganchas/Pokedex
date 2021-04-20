@@ -15,12 +15,11 @@ import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.scope.ScopeApi
 import com.example.pokedex.domain.web.IWebApi
-import com.example.pokedex.ui.main.MainViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import toLinkedList
+import com.example.pokedex.data.extensions.toLinkedList
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
