@@ -1,4 +1,4 @@
-package com.example.pokedex.domain.web
+package com.example.pokedex.domain.repository
 
 import android.content.Context
 import dagger.Module
@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object WebApiModule {
+object RepositoryApiModule {
     @Provides
-    fun provideWebApi(@ApplicationContext appContext: Context) : IWebApi = WebApiRetrofit(appContext)
+    fun provideRepositoryApi(@ApplicationContext appContext: Context) : IRepositoryApi = RepositoryApiRetrofit(appContext)
 }

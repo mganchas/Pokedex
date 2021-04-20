@@ -1,7 +1,7 @@
-package com.example.pokedex.domain.web
+package com.example.pokedex.domain.repository
 
 import com.example.pokedex.data.repository.IPokemonService
 
-interface IWebApi {
+interface IRepositoryApi {
     fun getPokemonService() : IPokemonService
 }

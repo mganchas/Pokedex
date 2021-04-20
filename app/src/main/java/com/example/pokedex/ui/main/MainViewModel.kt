@@ -14,7 +14,7 @@ import com.example.pokedex.data.models.PokemonSearch
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.parsers.IUrlParserApi
-import com.example.pokedex.domain.web.IWebApi
+import com.example.pokedex.domain.repository.IRepositoryApi
 import com.example.pokedex.ui.details.DetailsActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,7 +30,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val eventApi: IEventApi,
-    private val webApi: IWebApi,
+    private val repositoryApi: IRepositoryApi,
     private val urlParserApi: IUrlParserApi
 ) : ViewModel()
 {
@@ -183,7 +183,7 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemonByValue(value: String) : Pokemon {
         Log.d(TAG, "getPokemonByValue() value: $value")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonByValue(value)
+            repositoryApi.getPokemonService().getPokemonByValue(value)
         }
     }
 
@@ -224,7 +224,7 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemons() : PokemonSearch {
         Log.d(TAG, "getPokemons()")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonsWithLimit(pageLimit)
+            repositoryApi.getPokemonService().getPokemonsWithLimit(pageLimit)
         }
     }
 
@@ -242,14 +242,14 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemonsByUrl(url: String) : PokemonSearch {
         Log.d(TAG, "getPokemonsByUrl()")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonsByUrl(url)
+            repositoryApi.getPokemonService().getPokemonsByUrl(url)
         }
     }
 
     private suspend fun getPokemonDetailsByUrl(url: String) : Pokemon {
         Log.d(TAG, "getPokemonByUrl()")
         return withContext(Dispatchers.IO) {
-            webApi.getPokemonService().getPokemonByUrl(url)
+            repositoryApi.getPokemonService().getPokemonByUrl(url)
         }
     }
 

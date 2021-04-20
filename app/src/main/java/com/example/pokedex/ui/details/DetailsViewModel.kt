@@ -14,7 +14,7 @@ import com.example.pokedex.data.models.stats.PokemonStatPair
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.scope.ScopeApi
-import com.example.pokedex.domain.web.IWebApi
+import com.example.pokedex.domain.repository.IRepositoryApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -27,7 +27,7 @@ import javax.inject.Inject
 class DetailsViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val eventApi: IEventApi,
-    private val webApi: IWebApi
+    private val repositoryApi: IRepositoryApi
 ) : ViewModel()
 {
     companion object {
@@ -73,7 +73,7 @@ class DetailsViewModel @Inject constructor(
         val id = currentPokemon.id ?: throw NullPointerException("id cannot be null")
 
         try {
-            webApi.getPokemonService().setAsFavourite(id, currentPokemon)
+            repositoryApi.getPokemonService().setAsFavourite(id, currentPokemon)
         } catch (e: Exception) {
             e.printStackTrace()
             handleExceptions(e)
