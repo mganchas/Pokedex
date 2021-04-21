@@ -30,7 +30,7 @@ The project is separated into 4 different layers:
 **Note:** Each event has an `EventType` and a nullable `Map<String,Any>` payload.
 
 ### Typical communication flows
-```sequence
+```sequenceDiagram
 Note left of Controller: Events subscribed
 Controller ->> ViewModel: vm.method()
 Note right of ViewModel: Accesses the Pokémon API
@@ -39,7 +39,7 @@ ViewModel-->>Controller: Event published
 Note left of Controller: Event consumed
 ```
 _____
-```sequence
+```sequenceDiagram
 Note left of Controller: Data observables subscribed
 Controller ->> ViewModel: vm.method()
 Note right of ViewModel: Accesses the Pokémon API
