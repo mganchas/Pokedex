@@ -30,24 +30,10 @@ The project is separated into 4 different layers:
 **Note:** Each event has an `EventType` and a nullable `Map<String,Any>` payload.
 
 ### Typical communication flows
-```sequenceDiagram
-Note left of Controller: Events subscribed
-Controller ->> ViewModel: vm.method()
-Note right of ViewModel: Accesses the Pokémon API
-Note right of ViewModel: Something other than data loaded happened
-ViewModel-->>Controller: Event published
-Note left of Controller: Event consumed
-```
+![image](https://user-images.githubusercontent.com/26168007/115551424-f55f5780-a2a2-11eb-8056-65daa589b1fc.png)
 _____
-```sequenceDiagram
-Note left of Controller: Data observables subscribed
-Controller ->> ViewModel: vm.method()
-Note right of ViewModel: Accesses the Pokémon API
-Note right of ViewModel: Data loaded
-ViewModel-->>Controller: Observable notification posted
-Note left of Controller: Data observable consumed
 
-```
+![image](https://user-images.githubusercontent.com/26168007/115551467-07d99100-a2a3-11eb-9b97-536d929f60ed.png)
 
 
 ## Dependency Injection (DI)
