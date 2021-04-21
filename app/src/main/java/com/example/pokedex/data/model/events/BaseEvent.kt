@@ -1,4 +1,4 @@
-package com.example.pokedex.data.events
+package com.example.pokedex.data.model.events
 
 import com.example.pokedex.data.types.EventTypes
 

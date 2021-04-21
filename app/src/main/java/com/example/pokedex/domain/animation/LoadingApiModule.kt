@@ -9,7 +9,7 @@ import dagger.hilt.android.qualifiers.ActivityContext
 
 @Module
 @InstallIn(ActivityComponent::class)
-object AnimationApiModule {
+object LoadingApiModule {
     @Provides
-    fun provideAnimationApi(@ActivityContext activityContext: Context) : IAnimationApi = AnimationApiDialog(activityContext)
+    fun provideLoadingApi(@ActivityContext activityContext: Context) : ILoadingApi = LoadingApiDialog(activityContext)
 }

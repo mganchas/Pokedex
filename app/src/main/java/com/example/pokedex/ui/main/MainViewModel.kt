@@ -7,10 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.R
-import com.example.pokedex.data.events.BaseEvent
+import com.example.pokedex.data.model.events.BaseEvent
 import com.example.pokedex.data.mappers.EventTypesMapper
-import com.example.pokedex.data.models.Pokemon
-import com.example.pokedex.data.models.PokemonSearch
+import com.example.pokedex.data.model.pokemon.Pokemon
+import com.example.pokedex.data.model.pokemon.PokemonSearch
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.parsers.IUrlParserApi
@@ -111,7 +111,7 @@ class MainViewModel @Inject constructor(
         Log.d(TAG, "onSearch() searchValue: $searchText")
         val value = searchText ?: ""
         when (value.isEmpty()) {
-            true -> onEmptySearch()
+            true -> onCollectionSearch(null)
             false -> onSingleSearch(value)
         }
     }
@@ -195,11 +195,6 @@ class MainViewModel @Inject constructor(
         setIsNextNavigationButtonsEnabled(false)
     }
 
-    private fun onEmptySearch() {
-        Log.d(TAG, "onEmptySearch()")
-        onCollectionSearch(null)
-    }
-
     private fun onCollectionSearch(searchUrl: String?) = viewModelScope.launch {
         Log.d(TAG, "doCollectionSearch()")
         sendEventShowLoading()
@@ -262,10 +257,9 @@ class MainViewModel @Inject constructor(
             is HttpException -> {
                 if (e.code() == 404) {
                     sendEventNotFound()
+                    return
                 }
-                else {
-                    sendEventErrorNetwork()
-                }
+                sendEventErrorNetwork()
             }
             else -> {
                 sendEventErrorGeneric()

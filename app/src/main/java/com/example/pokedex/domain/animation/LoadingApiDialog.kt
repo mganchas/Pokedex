@@ -7,12 +7,12 @@ import com.example.pokedex.R
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
-class AnimationApiDialog @Inject constructor(
+class LoadingApiDialog @Inject constructor(
     @ActivityContext private val activityContext: Context
-) : IAnimationApi
+) : ILoadingApi
 {
     companion object {
-        private val TAG = AnimationApiDialog::class.java.simpleName
+        private val TAG = LoadingApiDialog::class.java.simpleName
     }
 
     private lateinit var dialog : Dialog

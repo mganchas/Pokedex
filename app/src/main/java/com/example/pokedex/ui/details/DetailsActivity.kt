@@ -5,14 +5,14 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.pokedex.data.events.BaseEvent
+import com.example.pokedex.data.model.events.BaseEvent
 import com.example.pokedex.data.mappers.EventTypesMapper
-import com.example.pokedex.data.models.Pokemon
-import com.example.pokedex.data.models.stats.PokemonStatPair
+import com.example.pokedex.data.model.pokemon.Pokemon
+import com.example.pokedex.data.model.pokemon.stats.PokemonStatPair
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.databinding.ActivityDetailsBinding
 import com.example.pokedex.domain.alerts.IAlertApi
-import com.example.pokedex.domain.animation.IAnimationApi
+import com.example.pokedex.domain.animation.ILoadingApi
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.image.IImageApi
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +29,7 @@ class DetailsActivity : AppCompatActivity()
     lateinit var eventApi : IEventApi
 
     @Inject
-    lateinit var animationApi : IAnimationApi
+    lateinit var loadingApi : ILoadingApi
 
     @Inject
     lateinit var imageApi : IImageApi

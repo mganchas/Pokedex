@@ -1,4 +1,4 @@
-package com.example.pokedex.data.models.stats.abstractions
+package com.example.pokedex.data.model.pokemon.stats.abstractions
 
 import android.content.Context
 import android.graphics.drawable.Drawable

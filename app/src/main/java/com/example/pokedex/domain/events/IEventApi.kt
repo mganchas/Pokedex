@@ -1,6 +1,6 @@
 package com.example.pokedex.domain.events
 
-import com.example.pokedex.data.events.BaseEvent
+import com.example.pokedex.data.model.events.BaseEvent
 
 interface IEventApi {
     fun publish(event: BaseEvent)

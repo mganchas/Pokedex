@@ -1,6 +1,6 @@
 package com.example.pokedex.data.extensions
 
-import com.example.pokedex.data.models.PokemonSprites
+import com.example.pokedex.data.model.pokemon.PokemonSprites
 import java.util.*
 
 fun PokemonSprites.toLinkedList() : LinkedList<String> {

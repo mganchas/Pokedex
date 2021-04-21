@@ -1,11 +1,11 @@
-package com.example.pokedex.data.models.stats
+package com.example.pokedex.data.model.pokemon.stats
 
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.pokedex.R
-import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
+import com.example.pokedex.data.model.pokemon.stats.abstractions.IPokemonStatDetails
 import com.example.pokedex.data.types.PokemonStatTypes
 
 class PokemonStatDetailsAttack : IPokemonStatDetails {

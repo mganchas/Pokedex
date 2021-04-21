@@ -12,15 +12,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pokedex.R
-import com.example.pokedex.data.events.BaseEvent
+import com.example.pokedex.data.model.events.BaseEvent
 import com.example.pokedex.data.mappers.EventTypesMapper
-import com.example.pokedex.data.models.Pokemon
+import com.example.pokedex.data.model.pokemon.Pokemon
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.databinding.ActivityMainBinding
 import com.example.pokedex.domain.alerts.IAlertApi
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.image.IImageApi
-import com.example.pokedex.domain.animation.IAnimationApi
+import com.example.pokedex.domain.animation.ILoadingApi
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.Subscribe
 import java.io.Serializable
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity()
     lateinit var eventApi : IEventApi
 
     @Inject
-    lateinit var animationApi : IAnimationApi
+    lateinit var loadingApi : ILoadingApi
 
     @Inject
     lateinit var imageApi : IImageApi
@@ -124,14 +124,14 @@ class MainActivity : AppCompatActivity()
     private fun onShowLoading(payload: Map<String, Any>?) {
         Log.d(TAG, "onShowLoading() payload: $payload")
         runOnUiThread {
-            animationApi.show()
+            loadingApi.show()
         }
     }
 
     private fun onHideLoading(payload: Map<String, Any>?) {
         Log.d(TAG, "onHideLoading() payload: $payload")
         runOnUiThread {
-            animationApi.hide()
+            loadingApi.hide()
         }
     }
 

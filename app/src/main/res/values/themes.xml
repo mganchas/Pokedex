@@ -3,10 +3,7 @@
         <item name="colorPrimary">@color/red_light</item>
         <item name="colorPrimaryVariant">@color/red_dark</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/blue</item>
-        <item name="colorSecondaryVariant">@color/blue</item>
-        <item name="colorOnSecondary">@color/white</item>
-
+        <item name="colorPrimaryDark">@color/red_dark</item>
     </style>
 
     <style name="MyThemeOverlay_Toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">

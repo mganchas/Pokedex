@@ -1,7 +1,7 @@
 package com.example.pokedex.domain.events
 
 import android.util.Log
-import com.example.pokedex.data.events.BaseEvent
+import com.example.pokedex.data.model.events.BaseEvent
 import org.greenrobot.eventbus.EventBus
 
 class EventApiGreenRobot : IEventApi

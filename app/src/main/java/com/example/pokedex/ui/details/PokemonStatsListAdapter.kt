@@ -4,7 +4,7 @@ import android.app.Application
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pokedex.data.models.stats.PokemonStatPair
+import com.example.pokedex.data.model.pokemon.stats.PokemonStatPair
 import com.example.pokedex.databinding.PokemonStatsItemBinding
 import com.example.pokedex.domain.scope.ScopeApi
 import kotlinx.coroutines.launch

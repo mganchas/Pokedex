@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pokedex.data.models.Pokemon
+import com.example.pokedex.data.model.pokemon.Pokemon
 import com.example.pokedex.databinding.PokemonSearchItemBinding
 import com.example.pokedex.domain.image.IImageApi
 import com.example.pokedex.domain.scope.ScopeApi

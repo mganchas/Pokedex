@@ -1,8 +1,8 @@
 package com.example.pokedex.data.managers
 
 import android.util.Log
-import com.example.pokedex.data.models.stats.*
-import com.example.pokedex.data.models.stats.abstractions.IPokemonStatDetails
+import com.example.pokedex.data.model.pokemon.stats.*
+import com.example.pokedex.data.model.pokemon.stats.abstractions.IPokemonStatDetails
 import com.example.pokedex.data.types.PokemonStatTypes
 
 object PokemonStatsManager
@@ -38,6 +38,9 @@ object PokemonStatsManager
 
     fun getStatTypeByRawValue(rawValue : String) : PokemonStatTypes {
         Log.d(TAG, "getStatTypeByRawValue() rawValue: $rawValue")
+        if (rawValue.isEmpty()) {
+            throw IllegalArgumentException("rawValue cannot be empty")
+        }
         return rawStatsMap[rawValue] ?: throw IndexOutOfBoundsException("invalid stat: $rawValue")
     }
 }

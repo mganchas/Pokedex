@@ -1,7 +1,7 @@
 package com.example.pokedex.data.repository
 
-import com.example.pokedex.data.models.Pokemon
-import com.example.pokedex.data.models.PokemonSearch
+import com.example.pokedex.data.model.pokemon.Pokemon
+import com.example.pokedex.data.model.pokemon.PokemonSearch
 import retrofit2.http.*
 
 interface IPokemonService {

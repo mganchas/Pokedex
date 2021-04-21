@@ -6,20 +6,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.R
-import com.example.pokedex.data.events.BaseEvent
+import com.example.pokedex.data.extensions.toLinkedList
 import com.example.pokedex.data.managers.PokemonStatsManager
 import com.example.pokedex.data.mappers.EventTypesMapper
-import com.example.pokedex.data.models.Pokemon
-import com.example.pokedex.data.models.stats.PokemonStatPair
+import com.example.pokedex.data.model.events.BaseEvent
+import com.example.pokedex.data.model.pokemon.Pokemon
+import com.example.pokedex.data.model.pokemon.stats.PokemonStatPair
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
-import com.example.pokedex.domain.scope.ScopeApi
 import com.example.pokedex.domain.repository.IRepositoryApi
+import com.example.pokedex.domain.scope.ScopeApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import com.example.pokedex.data.extensions.toLinkedList
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 

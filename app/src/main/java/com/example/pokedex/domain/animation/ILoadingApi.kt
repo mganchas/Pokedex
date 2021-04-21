@@ -1,6 +1,6 @@
 package com.example.pokedex.domain.animation
 
-interface IAnimationApi {
+interface ILoadingApi {
     fun show()
     fun hide()
 }
