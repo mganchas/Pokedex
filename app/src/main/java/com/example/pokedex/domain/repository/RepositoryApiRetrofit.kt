@@ -3,7 +3,6 @@ package com.example.pokedex.domain.repository
 import android.content.Context
 import android.util.Log
 import com.example.pokedex.R
-import com.example.pokedex.data.repository.IPokemonService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
