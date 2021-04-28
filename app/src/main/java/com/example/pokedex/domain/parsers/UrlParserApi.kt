@@ -2,6 +2,7 @@ package com.example.pokedex.domain.parsers
 
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import javax.inject.Inject
 
 class UrlParserApi @Inject constructor() : IUrlParserApi
@@ -12,7 +13,7 @@ class UrlParserApi @Inject constructor() : IUrlParserApi
 
     override fun getLastPath(uriRaw: String): String? {
         Log.d(TAG, "getLastPath() uriRaw: $uriRaw")
-        val uri = Uri.parse(uriRaw)
+        val uri = uriRaw.toUri()
         return getLastPath(uri)
     }
 
@@ -23,7 +24,7 @@ class UrlParserApi @Inject constructor() : IUrlParserApi
 
     override fun getQueryParameterValue(uriRaw: String, queryParameterName: String) : String? {
         Log.d(TAG, "getQueryParameterValue() uriRaw: $uriRaw | queryParameterName: $queryParameterName")
-        val uri = Uri.parse(uriRaw)
+        val uri = uriRaw.toUri()
         return getQueryParameterValue(uri, queryParameterName)
     }
 

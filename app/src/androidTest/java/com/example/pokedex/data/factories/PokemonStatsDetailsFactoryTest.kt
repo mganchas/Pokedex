@@ -1,4 +1,4 @@
-package com.example.pokedex.data.managers
+package com.example.pokedex.data.factories
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.pokedex.data.model.pokemon.stats.*
@@ -10,7 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class PokemonStatsManagerTest
+class PokemonStatsDetailsFactoryTest
 {
     private val statTypeRawValid = "hp"
     private val statTypeValid = PokemonStatTypes.HP
@@ -51,17 +51,17 @@ class PokemonStatsManagerTest
 
     @Test(expected = IllegalArgumentException::class)
     fun getStatTypeByRawValue_receivesEmptyString_throwsIllegalArgumentException() {
-        PokemonStatsManager.getStatTypeByRawValue("")
+        PokemonStatsDetailsFactory.getStatTypeByRawValue("")
     }
 
     @Test(expected = IndexOutOfBoundsException::class)
     fun getStatTypeByRawValue_receivesInvalidRawStatValue_throwsIndexOutOfBoundsException() {
-        PokemonStatsManager.getStatTypeByRawValue(statTypeRawInvalid)
+        PokemonStatsDetailsFactory.getStatTypeByRawValue(statTypeRawInvalid)
     }
 
     @Test
     fun getStatTypeByRawValue_receivesValidRawStatValue_returnsMatchingPokemonStatType() {
-        val statType = PokemonStatsManager.getStatTypeByRawValue(statTypeRawValid)
+        val statType = PokemonStatsDetailsFactory.getStatTypeByRawValue(statTypeRawValid)
         Assert.assertEquals(statTypeValid, statType)
     }
 
@@ -69,7 +69,7 @@ class PokemonStatsManagerTest
     fun getStatTypeByRawValue_receivesAllValidRawStatValues_returnsAllMatchingPokemonStatType() {
         val matchingList = mutableListOf<Boolean>()
         for (i in statTypeRawValuesList.indices) {
-            val statType = PokemonStatsManager.getStatTypeByRawValue(statTypeRawValuesList[i])
+            val statType = PokemonStatsDetailsFactory.getStatTypeByRawValue(statTypeRawValuesList[i])
             matchingList.add(statType == statTypesList[i])
         }
         Assert.assertTrue(matchingList.all { true })
@@ -77,7 +77,7 @@ class PokemonStatsManagerTest
 
     @Test
     fun getStatDetailsByType_receivesValidStatValue_returnsMatchingIPokemonStatDetails() {
-        val statTypeDetailsImplementation = PokemonStatsManager.getStatDetailsByType(statTypeValid)
+        val statTypeDetailsImplementation = PokemonStatsDetailsFactory.getStatDetailsByType(statTypeValid)
         Assert.assertTrue(statTypeDetailsImplementation is PokemonStatDetailsHP)
     }
 
@@ -85,7 +85,7 @@ class PokemonStatsManagerTest
     fun getStatDetailsByType_receivesAllValidStatValues_returnsAllMatchingIPokemonStatDetails() {
         val matchingList = mutableListOf<Boolean>()
         for (i in statTypesList.indices) {
-            val statType = PokemonStatsManager.getStatDetailsByType(statTypesList[i])
+            val statType = PokemonStatsDetailsFactory.getStatDetailsByType(statTypesList[i])
             matchingList.add(statType == statTypesDetailsList[i])
         }
         Assert.assertTrue(matchingList.all { true })

@@ -1,6 +1,7 @@
 package com.example.pokedex.domain.parsers
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.pokedex.domain.parsers.UrlParserApi
 import org.junit.Assert
@@ -34,7 +35,7 @@ class UrlParserApiTest
 
     @Test
     fun getLastPath_receivesValidUri_returnsLastPathValue() {
-        val uri = Uri.parse("$dummyUrl/$dummyLastPath")
+        val uri = "$dummyUrl/$dummyLastPath".toUri()
         Assert.assertEquals(dummyLastPath, api.getLastPath(uri))
     }
 
@@ -62,13 +63,13 @@ class UrlParserApiTest
 
     @Test
     fun getQueryParameterValue_receivesValidUri_returnsMatchingQueryParameterValue() {
-        val uri = Uri.parse("$dummyUrl?$otherDummyQueryParameterName=$dummyQueryParameterValue")
+        val uri = "$dummyUrl?$otherDummyQueryParameterName=$dummyQueryParameterValue".toUri()
         Assert.assertEquals(dummyQueryParameterValue, api.getQueryParameterValue(uri, otherDummyQueryParameterName))
     }
 
     @Test
     fun getQueryParameterValue_receivesValidUriButInvalidQueryParameter_returnsNull() {
-        val uri = Uri.parse("$dummyUrl?$otherDummyQueryParameterName=$dummyQueryParameterValue")
+        val uri = "$dummyUrl?$otherDummyQueryParameterName=$dummyQueryParameterValue".toUri()
         Assert.assertNull(api.getQueryParameterValue(uri, dummyQueryParameterName))
     }
 }

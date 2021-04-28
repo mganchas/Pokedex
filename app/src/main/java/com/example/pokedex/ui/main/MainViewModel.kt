@@ -14,7 +14,9 @@ import com.example.pokedex.data.model.pokemon.PokemonSearch
 import com.example.pokedex.data.types.EventTypes
 import com.example.pokedex.domain.events.IEventApi
 import com.example.pokedex.domain.parsers.IUrlParserApi
+import com.example.pokedex.domain.persistence.IPersistenceApi
 import com.example.pokedex.domain.repository.IRepositoryApi
+import com.example.pokedex.domain.scope.ScopeApi
 import com.example.pokedex.ui.details.DetailsActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,12 +27,14 @@ import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Scope
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val eventApi: IEventApi,
     private val repositoryApi: IRepositoryApi,
+    private val persistenceApi: IPersistenceApi<Pokemon>,
     private val urlParserApi: IUrlParserApi
 ) : ViewModel()
 {
@@ -171,6 +175,7 @@ class MainViewModel @Inject constructor(
             )
             setPokemonsCount(searchResults.count)
             setPokemonSearch(searchResults)
+            addPokemonToPersistence(pokemon)
         } catch (e: Exception) {
             e.printStackTrace()
             handleExceptions(e)
@@ -183,7 +188,7 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemonByValue(value: String) : Pokemon {
         Log.d(TAG, "getPokemonByValue() value: $value")
         return withContext(Dispatchers.IO) {
-            repositoryApi.getPokemonService().getPokemonByValue(value)
+            repositoryApi.getPokemonByValue(value)
         }
     }
 
@@ -207,6 +212,7 @@ class MainViewModel @Inject constructor(
             setIsNextNavigationButtonsEnabled(searchResults.next != null)
             setPokemonsCount(searchResults.count)
             setPokemonSearch(searchResults)
+            addPokemonsToPersistence(searchResults.results)
         } catch (e: Exception) {
             e.printStackTrace()
             handleExceptions(e)
@@ -219,14 +225,14 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemons() : PokemonSearch {
         Log.d(TAG, "getPokemons()")
         return withContext(Dispatchers.IO) {
-            repositoryApi.getPokemonService().getPokemonsWithLimit(pageLimit)
+            repositoryApi.getPokemonsWithLimit(pageLimit)
         }
     }
 
     private suspend fun getPokemonDetailsForResults(searchResults: PokemonSearch) {
         Log.d(TAG, "getPokemonDetailsForResults()")
         searchResults.results.forEach {
-            val pokemonDetails = getPokemonDetailsByUrl(it.url)
+            val pokemonDetails = getPokemonDetailsPersistedByName(it.name) ?: getPokemonDetailsByUrl(it.url)
             Log.d(TAG, "getPokemonDetailsForResults() pokemonDetails: $pokemonDetails")
             it.id = urlParserApi.getLastPath(it.url)
             it.sprites = pokemonDetails.sprites
@@ -237,14 +243,21 @@ class MainViewModel @Inject constructor(
     private suspend fun getPokemonsByUrl(url: String) : PokemonSearch {
         Log.d(TAG, "getPokemonsByUrl()")
         return withContext(Dispatchers.IO) {
-            repositoryApi.getPokemonService().getPokemonsByUrl(url)
+            repositoryApi.getPokemonsByUrl(url)
+        }
+    }
+
+    private suspend fun getPokemonDetailsPersistedByName(name: String) : Pokemon? {
+        Log.d(TAG, "getPokemonDetailsPersistedByName() name: $name")
+        return withContext(Dispatchers.IO) {
+            persistenceApi.get(name)
         }
     }
 
     private suspend fun getPokemonDetailsByUrl(url: String) : Pokemon {
         Log.d(TAG, "getPokemonByUrl()")
         return withContext(Dispatchers.IO) {
-            repositoryApi.getPokemonService().getPokemonByUrl(url)
+            repositoryApi.getPokemonByUrl(url)
         }
     }
 
@@ -265,6 +278,18 @@ class MainViewModel @Inject constructor(
                 sendEventErrorGeneric()
             }
         }
+    }
+
+    private fun addPokemonsToPersistence(pokemons: List<Pokemon>) = ScopeApi.io().launch {
+        Log.d(TAG, "addPokemonsToPersistence() pokemons: $pokemons")
+        pokemons.forEach {
+            addPokemonToPersistence(it)
+        }
+    }
+
+    private fun addPokemonToPersistence(pokemon: Pokemon) = ScopeApi.io().launch {
+        Log.d(TAG, "addPokemonToPersistence() pokemon: $pokemon")
+        persistenceApi.add(pokemon.name, pokemon)
     }
 
     private fun setIsPreviousNavigationButtonsEnabled(value: Boolean) = viewModelScope.launch {

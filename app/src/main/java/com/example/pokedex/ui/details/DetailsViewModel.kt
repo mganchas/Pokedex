@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.R
 import com.example.pokedex.data.extensions.toLinkedList
-import com.example.pokedex.data.managers.PokemonStatsManager
+import com.example.pokedex.data.factories.PokemonStatsDetailsFactory
 import com.example.pokedex.data.mappers.EventTypesMapper
 import com.example.pokedex.data.model.events.BaseEvent
 import com.example.pokedex.data.model.pokemon.Pokemon
@@ -73,7 +73,7 @@ class DetailsViewModel @Inject constructor(
         val id = currentPokemon.id ?: throw NullPointerException("id cannot be null")
 
         try {
-            repositoryApi.getPokemonService().setAsFavourite(id, currentPokemon)
+            repositoryApi.setAsFavourite(id, currentPokemon)
         } catch (e: Exception) {
             e.printStackTrace()
             handleExceptions(e)
@@ -85,10 +85,9 @@ class DetailsViewModel @Inject constructor(
         val pokemonRawStats = pokemon.stats ?: throw NullPointerException("null stats are not allowed")
         val pokemonStats = mutableListOf<PokemonStatPair>()
         pokemonRawStats.forEach {
-            val statType = PokemonStatsManager.getStatTypeByRawValue(it.statNameAndUrl.name)
-            val statDetails = PokemonStatsManager.getStatDetailsByType(statType)
+            val statDetails = PokemonStatsDetailsFactory.getPokemonStatDetailsByRawValue(it.statNameAndUrl.name)
             val statDetailsPair = PokemonStatPair(statDetails, it.value)
-            Log.d(TAG, "initWithPokemon() statType: $statType | statDetails: $statDetails | statDetailsPair: $statDetailsPair")
+            Log.d(TAG, "initWithPokemon() statDetails: $statDetails | statDetailsPair: $statDetailsPair")
             pokemonStats.add(statDetailsPair)
         }
         return pokemonStats

@@ -1,13 +1,13 @@
-package com.example.pokedex.data.managers
+package com.example.pokedex.data.factories
 
 import android.util.Log
 import com.example.pokedex.data.model.pokemon.stats.*
 import com.example.pokedex.data.model.pokemon.stats.abstractions.IPokemonStatDetails
 import com.example.pokedex.data.types.PokemonStatTypes
 
-object PokemonStatsManager
+object PokemonStatsDetailsFactory
 {
-    private val TAG = PokemonStatsManager::class.java.simpleName
+    private val TAG = PokemonStatsDetailsFactory::class.java.simpleName
 
     private val statsDetailsMap : Map<PokemonStatTypes, IPokemonStatDetails> by lazy {
         mapOf(
@@ -42,5 +42,14 @@ object PokemonStatsManager
             throw IllegalArgumentException("rawValue cannot be empty")
         }
         return rawStatsMap[rawValue] ?: throw IndexOutOfBoundsException("invalid stat: $rawValue")
+    }
+
+    fun getPokemonStatDetailsByRawValue(rawValue : String) : IPokemonStatDetails {
+        Log.d(TAG, "getStatTypeByRawValue() rawValue: $rawValue")
+        if (rawValue.isEmpty()) {
+            throw IllegalArgumentException("rawValue cannot be empty")
+        }
+        val type = getStatTypeByRawValue(rawValue)
+        return getStatDetailsByType(type)
     }
 }
