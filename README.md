@@ -53,8 +53,7 @@ I used [Picasso](https://square.github.io/picasso/) for loading images from the 
 I used [Lottie](https://github.com/airbnb/lottie-android) for rendering animations.
 
 ## Persistence
-I created a [feature-branch](https://github.com/mganchas/Pokedex/tree/feature/adding-persistence) for persisting data locally on the device, but more time would be required to finish its implementation.
-The idea was, once I've downloaded the Pokémon data once from the Pokémon API, I'd store it locally and the next time I'd use it instead of accessing the Pokémon API, to save download time and network data.
+Instead of using Room or ObjectBox for persistence, due to the simplicity of this exercise, I used SharedPreferences for persisting Pokemon details to save download time and network data.
 
 ## Data loading
 I believe there were (at least) two possible solutions for data loading here:
